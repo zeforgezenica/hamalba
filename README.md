@@ -15,7 +15,7 @@ https://dev.mysql.com/get/Downloads/MySQLInstaller/mysql-installer-community-8.0
 
 Unutar MySQL INSTALLERA imate opciju da dodate MySQL Server unutar instalera
 
-![alt text](readme-images\image.png)
+![alt text](readme-images/image.png)
 
 ![alt text](readme-images\image-1.png)
 
