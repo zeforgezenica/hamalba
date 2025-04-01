@@ -1,32 +1,21 @@
-using System.Diagnostics;
-using hamalba.Models;
+using hamalba.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace hamalba.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly DatabaseService _databaseService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(DatabaseService databaseService)
         {
-            _logger = logger;
+            _databaseService = databaseService;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            _databaseService.InitializeDatabase();
+            return Content("Baza je inicijalizovana!");
         }
     }
 }
