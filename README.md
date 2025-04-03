@@ -8,6 +8,8 @@ Takodjer instalirajte MySQL.data paket unutar projekta
 
 DEPENDENCIES
 
+Ako koristite Visual Studio IDE, verzija 17.12 je minimum da radi sa .NET 9.0
+
 .NET 9.0
 
 MySQL 8.0.41.0
