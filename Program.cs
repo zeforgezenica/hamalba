@@ -10,22 +10,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Registruj servise
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DatabaseService>();
-
+builder.Services.AddRazorPages();
 // Entity Framework + MySQL (Pomelo)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(9, 0, 0)) // prilagodi ako tvoj MySQL nije verzija 9
+        new MySqlServerVersion(new Version(9, 0, 0))
     ));
 
-// ASP.NET Identity setup
+// ONLY THIS (supports roles too)
 builder.Services.AddIdentity<Korisnik, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
 var app = builder.Build();
 
-//HTTP pipeline
+// HTTP pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -35,7 +35,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-//  Autentifikacija i autorizacija
+// Autentifikacija i autorizacija
 app.UseAuthentication(); // MORA biti prije Authorization
 app.UseAuthorization();
 
@@ -47,5 +47,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.Run();
+app.MapRazorPages(); // If you're using scaffolded Identity UI (Register/Login)
 
+app.Run();
