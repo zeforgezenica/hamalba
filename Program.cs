@@ -18,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         new MySqlServerVersion(new Version(9, 0, 0)) // prilagodi ako tvoj MySQL nije verzija 9
     ));
 
+builder.Services.AddDefaultIdentity<Korisnik>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
 // ASP.NET Identity setup
 builder.Services.AddIdentity<Korisnik, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
