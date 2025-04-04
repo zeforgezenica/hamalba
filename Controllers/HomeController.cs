@@ -10,12 +10,14 @@ namespace hamalba.Controllers
         public HomeController(DatabaseService databaseService)
         {
             _databaseService = databaseService;
+
         }
 
         public IActionResult Index()
         {
             _databaseService.InitializeDatabase();
-            return Content("Baza je inicijalizovana!");
+            //return Content("Baza je inicijalizovana!");
+            return View();
         }
     }
 }
