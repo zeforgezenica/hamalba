@@ -15,7 +15,7 @@ namespace hamalba.Controllers
 
         public IActionResult Index()
         {
-            _databaseService.InitializeDatabase();
+            //_databaseService.InitializeDatabase();
             //return Content("Baza je inicijalizovana!");
             return View();
         }
