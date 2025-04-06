@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using hamalba.Models;
 using hamalba.DataBase;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddRazorPages();
+
 // Entity Framework + MySQL (Pomelo)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(9, 0, 0))
     ));
+
+builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
+
 
 // ONLY THIS (supports roles too)
 builder.Services.AddIdentity<Korisnik, IdentityRole>()
@@ -46,6 +51,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
 
 app.MapRazorPages(); // If you're using scaffolded Identity UI (Register/Login)
 
