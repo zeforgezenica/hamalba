@@ -41,6 +41,6 @@ namespace hamalba.Models
 
         
         public string UserId { get; set; } // Strani ključ za korisnika
-        public virtual IdentityUser User { get; set; } // Navigacijsko svojstvo za korisnika
+        public virtual Korisnik User { get; set; } // Navigacijsko svojstvo za korisnika
     }
 }
