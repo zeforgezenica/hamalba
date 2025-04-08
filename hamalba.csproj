@@ -51,4 +51,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\User\" />
+  </ItemGroup>
+
 </Project>

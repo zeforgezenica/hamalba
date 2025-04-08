@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Models/Oglas.cs
+using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
@@ -9,15 +10,15 @@ namespace hamalba.Models
     public class Oglas
     {
         [Key]
-        public int OglasId { get; set; } 
+        public int OglasId { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Naslov { get; set; } 
+        public string Naslov { get; set; }
 
         [Required]
         [StringLength(1000)]
-        public string Opis { get; set; } 
+        public string Opis { get; set; }
 
         [Required]
         public DateTime Datum { get; set; } = DateTime.Now;
@@ -26,21 +27,20 @@ namespace hamalba.Models
         public OglasStatus Status { get; set; }
 
         [Required]
-        public DateTime Rok { get; set; } 
+        public DateTime Rok { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Kontakt { get; set; } 
+        public string Kontakt { get; set; }
 
         [Required]
-        public decimal Cijena { get; set; } 
+        public decimal Cijena { get; set; }
 
         [Required]
         [StringLength(255)]
-        public string Lokacija { get; set; } 
+        public string Lokacija { get; set; }
 
-        
-        public string UserId { get; set; } // Strani ključ za korisnika
-        public virtual IdentityUser User { get; set; } // Navigacijsko svojstvo za korisnika
+        public string UserId { get; set; }
+        public virtual Korisnik User { get; set; }
     }
 }

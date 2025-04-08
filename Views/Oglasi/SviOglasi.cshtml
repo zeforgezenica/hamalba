@@ -1,0 +1,34 @@
+﻿@model List<hamalba.Models.Oglas>
+
+<h2>Svi Oglasi</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Naslov</th>
+            
+            <th>Rok</th>
+            <th>Cijena</th>
+            <th>Lokacija</th>
+            
+            <th>Radnja</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var oglas in Model)
+        {
+            <tr>
+                <td>@oglas.Naslov</td>
+                <td>@oglas.Rok.ToShortDateString()</td>
+                <td>@oglas.Cijena.ToString("N2")</td>
+                <td>@oglas.Lokacija</td>
+                <td>
+                    <form asp-action="PrijaviSe" method="post">
+                        <input type="hidden" name="oglasId" value="@oglas.OglasId" />
+                        <button type="submit" class="btn btn-primary">Prijavi se</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

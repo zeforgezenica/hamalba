@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using hamalba.DataBase;
 
@@ -11,9 +12,11 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408120850_SveMigracije")]
+    partial class SveMigracije
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,30 +235,6 @@ namespace hamalba.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("hamalba.Models.KorisnikOglas", b =>
-                {
-                    b.Property<int>("PrijavaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PrijavaId"));
-
-                    b.Property<int>("OglasId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("PrijavaId");
-
-                    b.HasIndex("OglasId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("KorisnikOglasi");
-                });
-
             modelBuilder.Entity("hamalba.Models.Oglas", b =>
                 {
                     b.Property<int>("OglasId")
@@ -356,25 +335,6 @@ namespace hamalba.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("hamalba.Models.KorisnikOglas", b =>
-                {
-                    b.HasOne("hamalba.Models.Oglas", "Oglas")
-                        .WithMany()
-                        .HasForeignKey("OglasId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("hamalba.Models.Korisnik", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Oglas");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("hamalba.Models.Oglas", b =>
