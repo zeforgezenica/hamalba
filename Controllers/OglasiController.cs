@@ -27,6 +27,63 @@ namespace hamalba.Controllers
         {
             return View(new OglasViewModel());
         }
+        //Prikaz svih oglasa koji su objavljeni
+        [HttpGet]
+        public async Task<IActionResult> SviOglasi()
+        {
+            _logger.LogInformation("Fetching sve oglasi from database");
+
+            try
+            {
+                var oglasi = await _context.Oglasi
+                    .Include(o => o.User) 
+                    .ToListAsync();
+
+                return View(oglasi); 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error fetching oglasi");
+                return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
+            }
+        }
+
+        //Kontroler za prijavu na neki oglas
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PrijaviSe(int oglasId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            // Provjera da korisnik već nije prijavljen
+            bool vecPrijavljen = await _context.KorisnikOglasi
+                .AnyAsync(p => p.UserId == user.Id && p.OglasId == oglasId);
+
+            if (vecPrijavljen)
+            {
+                TempData["Message"] = "Već ste se prijavili na ovaj oglas.";
+                return RedirectToAction("SviOglasi");
+            }
+
+            var prijava = new KorisnikOglas
+            {
+                UserId = user.Id,
+                OglasId = oglasId
+            };
+
+            _context.KorisnikOglasi.Add(prijava);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Uspješno ste se prijavili na oglas!";
+            return RedirectToAction("SviOglasi");
+        }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

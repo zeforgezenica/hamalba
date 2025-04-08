@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250407123633_AddOglasEntity")]
-    partial class AddOglasEntity
+    [Migration("20250408120850_SveMigracije")]
+    partial class SveMigracije
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,10 +165,6 @@ namespace hamalba.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Adresa")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -209,6 +205,10 @@ namespace hamalba.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Prezime")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -283,7 +283,7 @@ namespace hamalba.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Oglasi");
+                    b.ToTable("Oglasi", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
