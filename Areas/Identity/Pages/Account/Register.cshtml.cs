@@ -124,6 +124,13 @@ namespace hamalba.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                var existingUser = await _userManager.FindByEmailAsync(Input.Email);
+
+                if (existingUser != null && existingUser.BanTrajanje != null && existingUser.BanTrajanje > DateTime.UtcNow)
+                {
+                    ModelState.AddModelError(string.Empty, $"Registracija nije dozvoljena. Email je banovan do {existingUser.BanTrajanje.Value:yyyy-MM-dd}.");
+                    return Page();
+                }
                 var user = CreateUser();
     
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
