@@ -1,0 +1,63 @@
+﻿@model hamalba.Models.OglasViewModel
+
+@{
+    ViewData["Title"] = "Kreiraj novi oglas";
+}
+
+<h2 class="mb-4">Kreiraj novi oglas</h2>
+
+<form asp-action="CreateOglas" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Naslov" class="form-label"></label>
+        <input asp-for="Naslov" class="form-control" />
+        <span asp-validation-for="Naslov" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Opis" class="form-label"></label>
+        <textarea asp-for="Opis" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Opis" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Rok" class="form-label"></label>
+        <input asp-for="Rok" type="datetime-local" class="form-control" />
+        <span asp-validation-for="Rok" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Cijena" class="form-label"></label>
+        <input asp-for="Cijena" class="form-control" />
+        <span asp-validation-for="Cijena" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Lokacija" class="form-label"></label>
+        <input asp-for="Lokacija" class="form-control" />
+        <span asp-validation-for="Lokacija" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Kontakt" class="form-label"></label>
+        <input asp-for="Kontakt" class="form-control" />
+        <span asp-validation-for="Kontakt" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-4">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<OglasStatus>()"></select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Objavi oglas</button>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
