@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using hamalba.Models;
 
-namespace hamalba.DataBase 
+namespace hamalba.DataBase
 {
     public class ApplicationDbContext : IdentityDbContext<Korisnik>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options) { }
-
-       
+        public DbSet<Korisnik> Korisnici { get; set; } 
     }
 }
