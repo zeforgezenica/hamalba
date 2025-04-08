@@ -105,8 +105,10 @@ namespace hamalba.Areas.Identity.Pages.Account
             public string Ime { get; set; }
 
             [Required]
-            [Display(Name = "Adresa")]
-            public string Adresa { get; set; }
+            [Display(Name = "Prezime")]
+            public string Prezime { get; set; }
+
+
         }
 
 
@@ -123,13 +125,13 @@ namespace hamalba.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
+    
+                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.Ime = Input.Ime;
-                user.Adresa = Input.Adresa;
+                user.Prezime = Input.Prezime;
+                user.Verifikovan = false;
                 user.DatumRegistracije = DateTime.UtcNow;
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
