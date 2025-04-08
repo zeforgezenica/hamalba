@@ -113,6 +113,12 @@ During installation, ensure to add MySQL Server.
 
 Once everything is set up, run your project by clicking the HTTPS option in the top section of Visual Studio.
 
+[ Diagrams ]
+
+	Use Case: https://online.visual-paradigm.com/share.jsp?id=323931383736382d3137
+
+	Activity: https://online.visual-paradigm.com/share.jsp?id=323931383736382d3138
+
 **Additional Instructions for Linux and Mac**
 
 *Installing .NET on Linux*
