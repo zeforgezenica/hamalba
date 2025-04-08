@@ -1,4 +1,4 @@
-﻿@model hamalba.Models.Oglas
+﻿@model hamalba.Models.OglasViewModel
 
 @{
     ViewData["Title"] = "Kreiraj novi oglas";
@@ -8,13 +8,8 @@
 
 <form asp-action="CreateOglas" method="post">
     @Html.AntiForgeryToken()
-    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-    <div class="form-group mb-3">
-        <label asp-for="OglasId" class="form-label"></label>
-        <input asp-for="OglasId" class="form-control" />
-        <span asp-validation-for="OglasId" class="text-danger"></span>
-    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="form-group mb-3">
         <label asp-for="Naslov" class="form-label"></label>
@@ -26,12 +21,6 @@
         <label asp-for="Opis" class="form-label"></label>
         <textarea asp-for="Opis" class="form-control" rows="4"></textarea>
         <span asp-validation-for="Opis" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Datum" class="form-label"></label>
-        <input asp-for="Datum" type="datetime-local" class="form-control" />
-        <span asp-validation-for="Datum" class="text-danger"></span>
     </div>
 
     <div class="form-group mb-3">
@@ -58,12 +47,6 @@
         <span asp-validation-for="Kontakt" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="UserId" class="form-label"></label>
-        <input asp-for="UserId" class="form-control" />
-        <span asp-validation-for="UserId" class="text-danger"></span>
-    </div>
-
     <div class="form-group mb-4">
         <label asp-for="Status" class="form-label"></label>
         <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<OglasStatus>()"></select>
@@ -72,3 +55,9 @@
 
     <button type="submit" class="btn btn-success">Objavi oglas</button>
 </form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
