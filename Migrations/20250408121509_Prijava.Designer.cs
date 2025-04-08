@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250404123917_InitialIdentity")]
-    partial class InitialIdentity
+    [Migration("20250408121509_Prijava")]
+    partial class Prijava
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -165,10 +165,6 @@ namespace hamalba.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Adresa")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -210,6 +206,10 @@ namespace hamalba.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("Prezime")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
@@ -233,6 +233,81 @@ namespace hamalba.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("hamalba.Models.KorisnikOglas", b =>
+                {
+                    b.Property<int>("PrijavaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PrijavaId"));
+
+                    b.Property<int>("OglasId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("PrijavaId");
+
+                    b.HasIndex("OglasId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("KorisnikOglasi");
+                });
+
+            modelBuilder.Entity("hamalba.Models.Oglas", b =>
+                {
+                    b.Property<int>("OglasId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("OglasId"));
+
+                    b.Property<decimal>("Cijena")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<DateTime>("Datum")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Kontakt")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Lokacija")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Naslov")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Opis")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime>("Rok")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("OglasId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Oglasi", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -284,6 +359,36 @@ namespace hamalba.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("hamalba.Models.KorisnikOglas", b =>
+                {
+                    b.HasOne("hamalba.Models.Oglas", "Oglas")
+                        .WithMany()
+                        .HasForeignKey("OglasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hamalba.Models.Korisnik", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Oglas");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("hamalba.Models.Oglas", b =>
+                {
+                    b.HasOne("hamalba.Models.Korisnik", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
