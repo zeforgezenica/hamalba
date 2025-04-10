@@ -1,0 +1,100 @@
+﻿@model List<hamalba.Models.Oglas>
+
+@{
+    ViewData["Title"] = "Admin Panel - Oglasi";
+}
+
+<h2 class="mb-3">Admin Panel - Lista oglasa</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<!-- Pretraga po imenu korisnika -->
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchIme" class="form-control" placeholder="Pretraži po imenu korisnika..." />
+        <button type="submit" class="btn btn-primary">Pretraži</button>
+    </div>
+</form>
+
+<!-- Dugme za show/hide -->
+<button class="btn btn-secondary mb-3" onclick="toggleTable()">Prikaži/Sakrij oglase</button>
+
+<!-- Tabela oglasa -->
+<div id="oglasiTabela">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Naslov</th>
+                <th>Korisnik</th>
+                <th>Email</th>
+                <th>Datum objave</th>
+                <th>Status</th>
+                <th>Rok</th>
+                <th>Lokacija</th>
+                <th>Cijena (KM)</th>
+                <th>Akcije</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var oglas in Model)
+            {
+                <tr>
+                    <td>@oglas.Naslov</td>
+                    <td>@oglas.User?.Ime @oglas.User?.Prezime</td>
+                    <td>@oglas.User?.Email</td>
+                    <td>@oglas.Datum.ToString("yyyy-MM-dd")</td>
+                    <td>@oglas.Status</td>
+                    <td>@oglas.Rok.ToString("yyyy-MM-dd")</td>
+                    <td>@oglas.Lokacija</td>
+                    <td>@oglas.Cijena.ToString("F2")</td>
+                    <td>
+                        <a asp-controller="AdminOglasi" asp-action="Edit" asp-route-id="@oglas.OglasId" class="btn btn-sm btn-warning me-1">Uredi</a>
+
+                        <form asp-controller="AdminOglasi" asp-action="Delete" asp-route-id="@oglas.OglasId" method="post" style="display:inline;" onsubmit="return confirm('Da li ste sigurni da želite obrisati oglas?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Obriši</button>
+                        </form>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    <!-- PAGINACIJA -->
+    <nav aria-label="Navigacija stranica">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i"
+                       asp-route-searchIme="@ViewBag.SearchIme">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+
+</div>
+
+@section Scripts {
+    <script>
+        function toggleTable() {
+            var table = document.getElementById("oglasiTabela");
+            table.style.display = table.style.display === "none" ? "block" : "none";
+        }
+    </script>
+}
