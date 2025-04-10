@@ -5,6 +5,7 @@ using hamalba.Models;
 using hamalba.DataBase;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using hamalba.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,4 +56,13 @@ app.MapControllerRoute(
 
 app.MapRazorPages(); // If you're using scaffolded Identity UI (Register/Login)
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RoleSeeder.SeedRolesAndAdmin(services);
+}
+
+
+
 app.Run();
+

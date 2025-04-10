@@ -8,6 +8,7 @@ namespace hamalba.Models
         public string Ime { get; set; }
         public string Prezime { get; set; }
         public DateTime DatumRegistracije { get; set; } = DateTime.UtcNow;
-        public bool Verifikovan { get; set; } = false; 
-    }
+        public bool Verifikovan { get; set; } = false;
+        public DateTime? BanTrajanje { get; set; }
+}
 }

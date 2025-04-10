@@ -1,0 +1,84 @@
+﻿@model List<hamalba.Models.Korisnik>
+@{
+    ViewData["Title"] = "Admin Panel - Korisnici";
+}
+
+<h2 class="mb-3">Admin Panel - Lista korisnika</h2>
+
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Pretraži korisnike..." />
+        <button type="submit" class="btn btn-primary">Pretraži</button>
+    </div>
+</form>
+
+<button class="btn btn-secondary mb-3" onclick="toggleTable()">Prikaži/Sakrij korisnike</button>
+
+<div id="korisniciTabela">
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Email</th>
+                <th>Datum registracije</th>
+                <th>Verifikovan</th>
+                <th>Akcija</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var korisnik in Model)
+            {
+                <tr>
+                    <td>@korisnik.Ime</td>
+                    <td>@korisnik.Prezime</td>
+                    <td>@korisnik.Email</td>
+                    <td>@korisnik.DatumRegistracije.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        @if (korisnik.Verifikovan)
+                        {
+                            <span class="text-success fw-bold">✔</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger fw-bold">✘</span>
+                        }
+                    </td>
+                    <td>
+
+                        <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
+                            <input type="hidden" name="id" value="@korisnik.Id" />
+                            <button class="btn btn-sm @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
+                                @(korisnik.Verifikovan ? "Deverifikuj" : "Verifikuj")
+                            </button>
+                        </form>
+
+                        <form asp-action="BanUser" asp-controller="Admin" method="post" class="mb-1">
+                            <input type="hidden" name="id" value="@korisnik.Id" />
+                            <div class="input-group input-group-sm">
+                                <input type="date" name="banTrajanje" class="form-control" />
+                                <button class="btn btn-danger" type="submit">Banuj</button>
+                            </div>
+                        </form>
+
+                        @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
+                        {
+                            <small class="text-danger">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
+                        }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleTable() {
+            var table = document.getElementById("korisniciTabela");
+            table.style.display = table.style.display === "none" ? "block" : "none";
+        }
+    </script>
+}
+
