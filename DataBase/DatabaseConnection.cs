@@ -5,7 +5,7 @@ namespace hamalba.DataBase
 {
     public class DatabaseConnection
     {
-        private string connectionString = "server=localhost;database=hamalba;user=root;password=root;";
+        private string connectionString = "server=db;database=hamalba;user=root;password=root;";
 
         public MySqlConnection GetConnection()
         {
