@@ -1,5 +1,13 @@
 ﻿@model hamalba.Models.Oglas
 
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<hamalba.Models.Korisnik> UserManager
+
+@{
+    var currentUserId = UserManager.GetUserId(User);
+    var isOwner = currentUserId == Model.UserId;
+}
+
 <h2>Detalji oglasa</h2>
 
 <table class="table">
@@ -42,3 +50,9 @@
 </table>
 
 <a asp-action="SviOglasi" class="btn btn-secondary">Nazad na oglase</a>
+
+@if (isOwner)
+{
+    <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="btn btn-info mt-3">Pregled kandidata</a>
+}
+

@@ -21,5 +21,9 @@ namespace hamalba.Models
 
         [ForeignKey("OglasId")]
         public virtual Oglas Oglas { get; set; }
+        
+        public int Status { get; set; } = -1; // -1 = Na čekanju, 1 = Prihvaćen, 0 = Odbijen
+
+
     }
 }

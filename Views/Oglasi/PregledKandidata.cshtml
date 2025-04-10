@@ -1,0 +1,74 @@
+﻿@model List<hamalba.Models.KorisnikOglas>
+@{
+    ViewData["Title"] = "Pregled kandidata";
+    var oglasId = ViewBag.OglasId;
+    var oglasNaslov = ViewBag.OglasNaslov as string;
+    var currentUserId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+<h2>Kandidati za oglas: @oglasNaslov</h2>
+
+@if (!Model.Any())
+{
+    <p>Nema prijavljenih kandidata za ovaj oglas.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Korisničko ime</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Akcija</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var prijava in Model)
+        {
+            <tr>
+                <td>@prijava.User.UserName</td>
+                <td>@prijava.User.Email</td>
+                <td>
+                    @if (prijava.Status == 1)
+                    {
+                        <span class="text-success">Prihvaćen</span>
+                    }
+                    else if (prijava.Status == 0)
+                    {
+                        <span class="text-danger">Odbijen</span>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Na čekanju</span>
+                    }
+                </td>
+                <td>
+                    @if (prijava.Status == -1 && prijava.Oglas.UserId == currentUserId)
+                    {
+                        <form asp-action="PrihvatiKandidata" method="post" style="display:inline;">
+                            <input type="hidden" name="oglasId" value="@oglasId" />
+                            <input type="hidden" name="kandidatId" value="@prijava.UserId" />
+                            <button type="submit" class="btn btn-success btn-sm">Prihvati</button>
+                        </form>
+                        <form asp-action="OdbijKandidata" method="post" style="display:inline; margin-left: 5px;">
+                            <input type="hidden" name="oglasId" value="@oglasId" />
+                            <input type="hidden" name="kandidatId" value="@prijava.UserId" />
+                            <button type="submit" class="btn btn-danger btn-sm">Odbij</button>
+                        </form>
+                    }
+
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+<a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@ViewBag.OglasId" class="btn btn-secondary mt-3">
+    Nazad na oglas
+</a>
+
