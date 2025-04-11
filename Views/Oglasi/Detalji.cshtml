@@ -1,0 +1,44 @@
+﻿@model hamalba.Models.Oglas
+
+<h2>Detalji oglasa</h2>
+
+<table class="table">
+    <tr>
+        <th>Naslov</th>
+        <td>@Model.Naslov</td>
+    </tr>
+    <tr>
+        <th>Opis</th>
+        <td>@Model.Opis</td>
+    </tr>
+    <tr>
+        <th>Datum objave</th>
+        <td>@Model.Datum.ToString("dd.MM.yyyy")</td>
+    </tr>
+    <tr>
+        <th>Rok</th>
+        <td>@Model.Rok.ToString("dd.MM.yyyy")</td>
+    </tr>
+    <tr>
+        <th>Cijena</th>
+        <td>@Model.Cijena.ToString("N2")</td>
+    </tr>
+    <tr>
+        <th>Lokacija</th>
+        <td>@Model.Lokacija</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>@Model.Status.ToString()</td>
+    </tr>
+    <tr>
+        <th>Kontakt</th>
+        <td>@Model.Kontakt</td>
+    </tr>
+    <tr>
+        <th>Objavio</th>
+        <td>@Model.User?.UserName</td>
+    </tr>
+</table>
+
+<a asp-action="SviOglasi" class="btn btn-secondary">Nazad na oglase</a>

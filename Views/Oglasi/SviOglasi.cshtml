@@ -27,6 +27,7 @@
                         <input type="hidden" name="oglasId" value="@oglas.OglasId" />
                         <button type="submit" class="btn btn-primary">Prijavi se</button>
                     </form>
+                    <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>
             </tr>
         }

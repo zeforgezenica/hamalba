@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using hamalba.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<DatabaseConnection>();
 
 // Registruj servise
 builder.Services.AddControllersWithViews();

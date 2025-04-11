@@ -1,0 +1,65 @@
+﻿version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: hamalba-app
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=hamalba;User=user;Password=userpass;
+    depends_on:
+      - migrator
+    networks:
+      - hamalba-network
+
+  migrator:
+    build:
+      context: .
+      target: build
+    container_name: hamalba-migrator
+    command: >
+      sh -c "
+      dotnet ef database update --project /src --startup-project /src"
+    volumes:
+      - .:/src
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Port=3306;Database=hamalba;User=user;Password=userpass;
+    networks:
+      - hamalba-network
+
+
+
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: hamalba
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hamalba-network
+
+volumes:
+  dbdata:
+
+networks:
+  hamalba-network:
