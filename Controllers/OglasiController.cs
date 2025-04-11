@@ -105,6 +105,89 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+        //Pregled prijavljenih kandidata
+        [HttpGet]
+        public async Task<IActionResult> PregledKandidata(int id)
+        {
+            var oglas = await _context.Oglasi
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OglasId == id);
+
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            var prijave = await _context.KorisnikOglasi
+                .Where(ko => ko.OglasId == id)
+                .Include(ko => ko.User)
+                .ToListAsync();
+
+            ViewBag.OglasNaslov = oglas.Naslov;
+            ViewBag.OglasId = oglas.OglasId;
+
+            return View(prijave);
+        }
+
+        //Prihvatanje kandidata za posao
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PrihvatiKandidata(int oglasId, string kandidatId)
+        {
+            var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (oglas == null || currentUser == null || oglas.UserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            var prijava = await _context.KorisnikOglasi
+                .FirstOrDefaultAsync(p => p.OglasId == oglasId && p.UserId == kandidatId);
+
+            if (prijava == null)
+            {
+                return NotFound();
+            }
+
+            prijava.Status = 1;
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Kandidat je prihvaćen.";
+            return RedirectToAction("PregledKandidata", new { id = oglasId });
+        }
+        
+        //Odbijanje kandidata za posao
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OdbijKandidata(int oglasId, string kandidatId)
+        {
+            var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (oglas == null || currentUser == null || oglas.UserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            var prijava = await _context.KorisnikOglasi
+                .FirstOrDefaultAsync(p => p.OglasId == oglasId && p.UserId == kandidatId);
+
+            if (prijava == null)
+            {
+                return NotFound();
+            }
+
+            prijava.Status = 0;
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Kandidat je odbijen.";
+            return RedirectToAction("PregledKandidata", new { id = oglasId });
+        }
+
+
+
+
 
 
 
