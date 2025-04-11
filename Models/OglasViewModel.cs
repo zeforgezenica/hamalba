@@ -29,7 +29,6 @@ namespace hamalba.Models
         [StringLength(255, ErrorMessage = "Lokacija ne smije biti duža od 255 znakova")]
         public string Lokacija { get; set; }
 
-        [Required(ErrorMessage = "Status je obavezan")]
-        public OglasStatus Status { get; set; }
+        public OglasStatus Status { get; set; } = OglasStatus.Aktivan;
     }
 }
