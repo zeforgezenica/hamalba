@@ -82,6 +82,30 @@ namespace hamalba.Controllers
             TempData["Message"] = "Uspješno ste se prijavili na oglas!";
             return RedirectToAction("SviOglasi");
         }
+        //Single View oglasa
+        [HttpGet]
+        public async Task<IActionResult> Detalji(int id)
+        {
+            try
+            {
+                var oglas = await _context.Oglasi
+                    .Include(o => o.User)
+                    .FirstOrDefaultAsync(o => o.OglasId == id);
+
+                if (oglas == null)
+                {
+                    return NotFound();
+                }
+
+                return View(oglas);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Greška prilikom dohvaćanja detalja oglasa");
+                return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
+            }
+        }
+
 
 
 
