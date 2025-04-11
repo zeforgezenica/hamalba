@@ -1,23 +1,30 @@
-using hamalba.Services;
+﻿using hamalba.Controllers;
+using hamalba.DataBase;
+using hamalba.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace hamalba.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly DatabaseService _databaseService;
+        private readonly ApplicationDbContext _context;
 
-        public HomeController(DatabaseService databaseService)
+        public HomeController(ApplicationDbContext context)
         {
-            _databaseService = databaseService;
-
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            //_databaseService.InitializeDatabase();
-            //return Content("Baza je inicijalizovana!");
-            return View();
+            // Dohvatiti sve oglase
+            var oglasi = _context.Oglasi
+                .Where(o => o.Status == OglasStatus.Aktivan) // Filtriramo samo aktivne oglase
+                .Take(4) // Ograničavamo broj na 4
+                .ToList();
+
+            // Slanje podataka u View
+            return View(oglasi);
         }
     }
 }
