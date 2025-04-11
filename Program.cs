@@ -7,6 +7,7 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddSingleton<DatabaseConnection>();
 
 // Registruj servise
 builder.Services.AddControllersWithViews();

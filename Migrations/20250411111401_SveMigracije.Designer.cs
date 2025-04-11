@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410132017_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250411111401_SveMigracije")]
+    partial class SveMigracije
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

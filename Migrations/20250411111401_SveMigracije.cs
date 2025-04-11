@@ -235,6 +235,34 @@ namespace hamalba.Migrations
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+            migrationBuilder.CreateTable(
+                name: "KorisnikOglasi",
+                columns: table => new
+                {
+                    PrijavaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(type: "varchar(255)", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    OglasId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_KorisnikOglasi", x => x.PrijavaId);
+                    table.ForeignKey(
+                        name: "FK_KorisnikOglasi_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_KorisnikOglasi_Oglasi_OglasId",
+                        column: x => x.OglasId,
+                        principalTable: "Oglasi",
+                        principalColumn: "OglasId",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -273,6 +301,16 @@ namespace hamalba.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_KorisnikOglasi_OglasId",
+                table: "KorisnikOglasi",
+                column: "OglasId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_KorisnikOglasi_UserId",
+                table: "KorisnikOglasi",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Oglasi_UserId",
                 table: "Oglasi",
                 column: "UserId");
@@ -297,10 +335,13 @@ namespace hamalba.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Oglasi");
+                name: "KorisnikOglasi");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Oglasi");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
