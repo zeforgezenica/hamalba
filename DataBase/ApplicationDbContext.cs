@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using hamalba.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace hamalba.DataBase 
+namespace hamalba.DataBase
 {
     public class ApplicationDbContext : IdentityDbContext<Korisnik>
     {
@@ -36,6 +36,7 @@ namespace hamalba.DataBase
         }
     
 
+        public DbSet<Korisnik> Korisnici { get; set; } 
     }
 
 }

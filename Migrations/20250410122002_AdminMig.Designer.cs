@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250408121509_Prijava")]
-    partial class Prijava
+    [Migration("20250410122002_AdminMig")]
+    partial class AdminMig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -164,6 +164,9 @@ namespace hamalba.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("BanTrajanje")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
