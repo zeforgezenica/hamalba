@@ -1,23 +1,27 @@
-**Project Setup Guide**
+# **Project Setup Guide**
 
 Cloning and Setting Up the Project
 
 When you clone the project or download it from our GitHub repository, open it in Visual Studio.
 Also, install the MySQL.Data package within the project.
 
-**Dependencies**
+## **Dependencies**
 
 To install all required NuGet packages, run the following commands in the terminal:
 
-* dotnet tool install --global dotnet-ef
+* ```dotnet tool install --global dotnet-ef```
 
-* dotnet restore
+* ```dotnet restore```
 
-**Visual Studio Requirements**
+* ```dotnet ef migrations add InitialCreate```
+
+* ```dotnet ef database update```
+
+## **Visual Studio Requirements**
 
 If you are using Visual Studio IDE, version 17.12 or higher is required for compatibility with .NET 9.0.
 
-**Required Software**
+## **Required Software**
 
 .NET 9.0
 
@@ -109,17 +113,18 @@ During installation, ensure to add MySQL Server.
 
 * Finally, click Finish.
 
-**Running the Project**
+## **Running the Project**
 
 Once everything is set up, run your project by clicking the HTTPS option in the top section of Visual Studio.
 
-[ Diagrams ]
+## **Diagrams**
 
-	Use Case: https://online.visual-paradigm.com/share.jsp?id=323931383736382d3137
+[Use Case](https://online.visual-paradigm.com/share.jsp?id=323931383736382d3137)
 
-	Activity: https://online.visual-paradigm.com/share.jsp?id=323931383736382d3138
+[Activity](https://online.visual-paradigm.com/share.jsp?id=323931383736382d3138)
 
-**Additional Instructions for Linux and Mac**
+	
+## **Additional Instructions for Linux and Mac**
 
 *Installing .NET on Linux*
 
@@ -127,73 +132,111 @@ Once everything is set up, run your project by clicking the HTTPS option in the 
 
 * Ubuntu/Debian:
 
-sudo apt-get update && sudo apt-get install -y dotnet-sdk-9.0
+```sudo apt-get update && sudo apt-get install -y dotnet-sdk-9.0```
 
 * Fedora:
 
-sudo dnf install dotnet-sdk-9.0
+```sudo dnf install dotnet-sdk-9.0```
 
 * Arch Linux:
 
-sudo pacman -S dotnet-sdk
+```sudo pacman -S dotnet-sdk```
 
 * Verify installation:
 
-dotnet --version
+```dotnet --version```
 
 * Installing MySQL on Linux
 
 * Install MySQL Server:
 
-sudo apt update && sudo apt install mysql-server
+```sudo apt update && sudo apt install mysql-server```
 
 * Start and enable MySQL service:
 
-sudo systemctl start mysql
-sudo systemctl enable mysql
+```sudo systemctl start mysql```
+```sudo systemctl enable mysql```
 
 * Secure your installation:
 
-sudo mysql_secure_installation
+```sudo mysql_secure_installation```
 
 * Log in to MySQL:
 
-mysql -u root -p
+```mysql -u root -p```
 
 *Installing .NET on macOS*
 
 * Install Homebrew (if not installed):
 
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"```
 
 * Install .NET SDK:
 
-brew install dotnet-sdk
+```brew install dotnet-sdk```
 
 * Verify installation:
 
-dotnet --version
+```dotnet --version```
 
 *Installing MySQL on macOS*
 
 * Install MySQL using Homebrew:
 
-brew install mysql
+```brew install mysql```
 
 * Start MySQL service:
 
-brew services start mysql
+```brew services start mysql```
 
 * Set up root password:
 
-mysql_secure_installation
+```mysql_secure_installation```
 
 * Log in to MySQL:
 
-mysql -u root -p
+```mysql -u root -p```
 
 Now, follow the same steps to restore dependencies and run your project!
 
 This guide ensures smooth setup across Windows, Linux, and macOS.
+
+## **Docker Support**
+
+The project now includes a Dockerfile and a docker-compose.yml for simplified containerized setup and deployment.
+
+### **What's Included:**
+* Automatic EF Core migration generation and execution
+
+* Dockerized environment for both the application and the database
+
+* Easy local development with isolated services
+
+**How to Run with Docker:**
+
+To build and run the entire application using Docker, run the following command in your terminal:
+```
+docker compose up --build
+ ```
+This command will:
+
+* Build the Docker image
+
+* Apply all EF Core migrations automatically
+
+* Start both the application and MySQL in Docker containers
+
+### **MySQL Connection Details (Docker)**
+
+When connecting to the MySQL database running in Docker, use the following credentials:
+* Host: ```localhost```
+
+* Port: ```3307```
+
+* Username: ```user```
+
+* Password: ```userpass```
+
+**Make sure that port ```3307``` is free on your system before starting Docker. If not, adjust the docker-compose.yml accordingly.**
 
 
