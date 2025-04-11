@@ -246,6 +246,9 @@ namespace hamalba.Migrations
                     b.Property<int>("OglasId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");

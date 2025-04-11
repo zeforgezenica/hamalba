@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250410132018_ZamijeniPrihvacenOdbijenWithStatus")]
-    partial class ZamijeniPrihvacenOdbijenWithStatus
+    [Migration("20250411132255_MigracijeReInit")]
+    partial class MigracijeReInit
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -164,6 +164,9 @@ namespace hamalba.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("BanTrajanje")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
