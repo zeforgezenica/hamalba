@@ -154,6 +154,35 @@ namespace hamalba.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("hamalba.Models.Kontakt", b =>
+                {
+                    b.Property<int>("KontaktId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("KontaktId"));
+
+                    b.Property<DateTime>("DatumSlanja")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Naslov")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Poruka")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("KontaktId");
+
+                    b.ToTable("Kontakt");
+                });
+
             modelBuilder.Entity("hamalba.Models.Korisnik", b =>
                 {
                     b.Property<string>("Id")
