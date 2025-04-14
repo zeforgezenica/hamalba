@@ -11,7 +11,9 @@ namespace hamalba.DataBase
             : base(options) { }
 
         public DbSet<Oglas> Oglasi { get; set; }
-        public DbSet<KorisnikOglas> KorisnikOglasi { get; set; } 
+        public DbSet<KorisnikOglas> KorisnikOglasi { get; set; }
+        public DbSet<Kontakt> Kontakt { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

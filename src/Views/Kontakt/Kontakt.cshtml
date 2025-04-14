@@ -1,0 +1,34 @@
+﻿@model hamalba.Models.Kontakt
+
+@{
+    ViewData["Title"] = "Kontakt forma";
+}
+
+<h2 class="mb-4">Kontaktiraj nas</h2>
+
+<form asp-action="SendMessage" method="post">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Naslov" class="form-label"></label>
+        <input asp-for="Naslov" class="form-control" />
+        <span asp-validation-for="Naslov" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-4">
+        <label asp-for="Poruka" class="form-label"></label>
+        <textarea asp-for="Poruka" class="form-control" rows="5"></textarea>
+        <span asp-validation-for="Poruka" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Pošalji poruku</button>
+</form>
+
