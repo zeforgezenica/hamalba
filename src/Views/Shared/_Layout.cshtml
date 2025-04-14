@@ -30,17 +30,36 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Views" asp-controller="Oglasi" asp-action="SviOglasi">Oglasi</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="btn btn-secondary ms-2" asp-area="Identity" asp-page="/Account/Login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="btn btn-primary ms-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
-                        </li>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="Index">Dashboard</a>
+                            </li>
+                        }
+
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-secondary ms-2" asp-area="Identity" asp-page="/Account/Login">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ms-2" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <form asp-area="Identity" asp-page="/Account/Logout" method="post" id="logoutForm" class="d-inline">
+                                    <a class="btn btn-primary ms-2" asp-area="Identity" asp-page="/Account/Logout">Logout</a>
+                                </form>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
     <div class="container-fluid px-0">
         <main role="main" class="pb-3">
             @RenderBody()
