@@ -221,7 +221,7 @@ namespace hamalba.Controllers
                     Kontakt = viewModel.Kontakt,
                     Cijena = viewModel.Cijena,
                     Lokacija = viewModel.Lokacija,
-                    Status = viewModel.Status,
+                    Status = OglasStatus.Aktivan,
                     Datum = DateTime.Now,
                     UserId = user.Id,
                     User = user
@@ -231,7 +231,7 @@ namespace hamalba.Controllers
                 await _context.SaveChangesAsync();
 
                 _logger.LogInformation("Oglas created successfully. ID: {OglasId}", oglas.OglasId);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("SviOglasi", "Oglasi");
             }
             catch (DbUpdateException ex)
             {
