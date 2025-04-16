@@ -7,6 +7,8 @@ using hamalba.Models;
 using System;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
 namespace hamalba.Controllers
 {
     public class OglasiController : Controller
@@ -27,6 +29,7 @@ namespace hamalba.Controllers
         {
             return View(new OglasViewModel());
         }
+
         //Prikaz svih oglasa koji su objavljeni
         [HttpGet]
         public async Task<IActionResult> SviOglasi()
@@ -35,11 +38,14 @@ namespace hamalba.Controllers
 
             try
             {
+                var currentDateTime = DateTime.Now;
+
                 var oglasi = await _context.Oglasi
-                    .Include(o => o.User) 
+                    .Include(o => o.User)
+                    .Where(o => o.DatumObjave <= currentDateTime && o.Status != OglasStatus.Otkazan)
                     .ToListAsync();
 
-                return View(oglasi); 
+                return View(oglasi);
             }
             catch (Exception ex)
             {
@@ -49,7 +55,6 @@ namespace hamalba.Controllers
         }
 
         //Kontroler za prijavu na neki oglas
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PrijaviSe(int oglasId)
@@ -82,6 +87,7 @@ namespace hamalba.Controllers
             TempData["Message"] = "Uspješno ste se prijavili na oglas!";
             return RedirectToAction("SviOglasi");
         }
+
         //Single View oglasa
         [HttpGet]
         public async Task<IActionResult> Detalji(int id)
@@ -105,6 +111,7 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
         //Pregled prijavljenih kandidata
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
@@ -156,7 +163,7 @@ namespace hamalba.Controllers
             TempData["Message"] = "Kandidat je prihvaćen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
-        
+
         //Odbijanje kandidata za posao
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -185,16 +192,9 @@ namespace hamalba.Controllers
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
 
-
-
-
-
-
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel)
+        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
         {
             _logger.LogInformation("CreateOglas POST started");
 
@@ -221,16 +221,39 @@ namespace hamalba.Controllers
                     Kontakt = viewModel.Kontakt,
                     Cijena = viewModel.Cijena,
                     Lokacija = viewModel.Lokacija,
-                    Status = OglasStatus.Aktivan,
                     Datum = DateTime.Now,
                     UserId = user.Id,
                     User = user
                 };
 
+                // Determine status and publication date based on button pressed
+                if (PublishLater == true)
+                {
+                    // Use the selected publication date
+                    oglas.DatumObjave = viewModel.DatumObjave;
+                    oglas.Status = OglasStatus.CekaNaObjavu;
+                }
+                else
+                {
+                    // Publish now
+                    oglas.DatumObjave = DateTime.Now;
+                    oglas.Status = OglasStatus.Aktivan;
+                }
+
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Oglas created successfully. ID: {OglasId}", oglas.OglasId);
+                _logger.LogInformation("Oglas created successfully. ID: {OglasId}, Status: {Status}", oglas.OglasId, oglas.Status);
+
+                if (oglas.Status == OglasStatus.CekaNaObjavu)
+                {
+                    TempData["Message"] = $"Oglas kreiran i bit će objavljen {oglas.DatumObjave.ToString("dd/MM/yyyy HH:mm")}";
+                }
+                else
+                {
+                    TempData["Message"] = "Oglas uspješno kreiran i objavljen!";
+                }
+
                 return RedirectToAction("SviOglasi", "Oglasi");
             }
             catch (DbUpdateException ex)
