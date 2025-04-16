@@ -1,40 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\HP\\source\\repos\\hamalba\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:readme.md||{EFC0BB08-EA7D-40C6-A696-C870411A895B}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:docker-compose.yml||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:dockerfile||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\database\\databaseconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:database\\databaseconnection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\hamalba.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:hamalba.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\models\\oglasi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:models\\oglasi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|c:\\users\\hp\\source\\repos\\hamalba\\models\\korisnikoglas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6925D43A-DD37-4C9F-8FCE-B4754A05CE42}|hamalba.csproj|solutionrelative:models\\korisnikoglas.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -42,7 +9,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -51,108 +18,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "README.md",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\README.md",
-              "RelativeDocumentMoniker": "README.md",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\README.md",
-              "RelativeToolTip": "README.md",
-              "ViewState": "AgIAAG8AAAAAAAAAAAAIwHgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001818|",
-              "WhenOpened": "2025-04-11T12:14:58.17Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-04-11T10:52:50.347Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "hamalba.csproj",
-              "DocumentMoniker": "C:\\Users\\HP\\Source\\Repos\\hamalba\\hamalba.csproj",
-              "RelativeDocumentMoniker": "hamalba.csproj",
-              "ToolTip": "C:\\Users\\HP\\Source\\Repos\\hamalba\\hamalba.csproj",
-              "RelativeToolTip": "hamalba.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADkAAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-04-10T11:39:04.63Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "KorisnikOglas.cs",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\Models\\KorisnikOglas.cs",
-              "RelativeDocumentMoniker": "Models\\KorisnikOglas.cs",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\Models\\KorisnikOglas.cs",
-              "RelativeToolTip": "Models\\KorisnikOglas.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-10T11:14:30.84Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Oglasi.cs",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\Models\\Oglasi.cs",
-              "RelativeDocumentMoniker": "Models\\Oglasi.cs",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\Models\\Oglasi.cs",
-              "RelativeToolTip": "Models\\Oglasi.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAUAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-10T11:09:25.433Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DatabaseConnection.cs",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\DataBase\\DatabaseConnection.cs",
-              "RelativeDocumentMoniker": "DataBase\\DatabaseConnection.cs",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\DataBase\\DatabaseConnection.cs",
-              "RelativeToolTip": "DataBase\\DatabaseConnection.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAABXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-08T13:21:44.422Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "docker-compose.yml",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\docker-compose.yml",
-              "RelativeDocumentMoniker": "docker-compose.yml",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\docker-compose.yml",
-              "RelativeToolTip": "docker-compose.yml",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAsAAABuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003775|",
-              "WhenOpened": "2025-04-08T13:20:37.494Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Dockerfile",
-              "DocumentMoniker": "C:\\Users\\HP\\source\\repos\\hamalba\\Dockerfile",
-              "RelativeDocumentMoniker": "Dockerfile",
-              "ToolTip": "C:\\Users\\HP\\source\\repos\\hamalba\\Dockerfile",
-              "RelativeToolTip": "Dockerfile",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2025-04-08T13:16:23.057Z",
-              "EditorCaption": ""
             }
           ]
         }
