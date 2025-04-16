@@ -7,6 +7,7 @@ using hamalba.Models;
 using System;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using hamalba.ViewModels;
 namespace hamalba.Controllers
 {
     public class OglasiController : Controller
@@ -47,6 +48,38 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
+        //Filtracija
+        // GET: Prikaz forme i rezultata
+        public IActionResult Filtriraj()
+        {
+            var viewModel = new OglasFilterViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Filtriraj(OglasFilterViewModel filter)
+        {
+            var query = _context.Oglasi.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.Lokacija))
+                query = query.Where(o => o.Lokacija.Contains(filter.Lokacija));
+
+            if (filter.MinimalnaCijena.HasValue)
+                query = query.Where(o => o.Cijena >= filter.MinimalnaCijena.Value);
+
+            if (filter.MaksimalnaCijena.HasValue)
+                query = query.Where(o => o.Cijena <= filter.MaksimalnaCijena.Value);
+
+            if (!string.IsNullOrEmpty(filter.NazivPosla))
+                query = query.Where(o => o.Naslov.Contains(filter.NazivPosla));
+
+            filter.Rezultati = query.ToList();
+
+            return View(filter);
+        }
+
+
 
         //Kontroler za prijavu na neki oglas
 
