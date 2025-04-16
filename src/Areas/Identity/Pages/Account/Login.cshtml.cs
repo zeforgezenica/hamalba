@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -116,10 +116,19 @@ namespace hamalba.Areas.Identity.Pages.Account
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
 
-                if (user != null && user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
+                if (user != null)
                 {
-                    ModelState.AddModelError(string.Empty, $"Vas nalog je banovan do {user.BanTrajanje.Value:yyyy-MM-dd}.");
-                    return Page();
+                    if (user.Arhiviran == 1)
+                    {
+                        ModelState.AddModelError(string.Empty, "Vaš nalog je trajno onemogućen.");
+                        return Page();
+                    }
+
+                    if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
+                    {
+                        ModelState.AddModelError(string.Empty, $"Vaš nalog je banovan do {user.BanTrajanje.Value:yyyy-MM-dd}.");
+                        return Page();
+                    }
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
@@ -140,13 +149,14 @@ namespace hamalba.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
                     return Page();
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            
             return Page();
         }
+
     }
 }
