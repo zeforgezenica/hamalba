@@ -24,6 +24,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
 
+var service = new HuggingFaceService();
+var result = await service.AskAI("Hello");
+
+
 
 // ONLY THIS (supports roles too)
 builder.Services.AddIdentity<Korisnik, IdentityRole>()
