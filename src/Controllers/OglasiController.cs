@@ -42,9 +42,7 @@ namespace hamalba.Controllers
 
                 var oglasi = await _context.Oglasi
                     .Include(o => o.User)
-                    .Where(o => o.DatumObjave <= currentDateTime &&
-                               o.Status != OglasStatus.Otkazan &&
-                               o.Status != OglasStatus.CekaNaObjavu)
+                    .Where(o => o.Status == OglasStatus.Aktivan)
                     .ToListAsync();
 
                 return View(oglasi);
