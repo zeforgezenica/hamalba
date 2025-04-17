@@ -42,5 +42,6 @@ namespace hamalba.Models
 
         public string UserId { get; set; }
         public virtual Korisnik User { get; set; }
+        public bool Arhiviran { get; set; } // Dodano polje za arhiviranje
     }
 }
