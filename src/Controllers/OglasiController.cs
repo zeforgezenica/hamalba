@@ -42,7 +42,9 @@ namespace hamalba.Controllers
 
                 var oglasi = await _context.Oglasi
                     .Include(o => o.User)
-                    .Where(o => o.DatumObjave <= currentDateTime && o.Status != OglasStatus.Otkazan)
+                    .Where(o => o.DatumObjave <= currentDateTime &&
+                               o.Status != OglasStatus.Otkazan &&
+                               o.Status != OglasStatus.CekaNaObjavu)
                     .ToListAsync();
 
                 return View(oglasi);
@@ -226,16 +228,15 @@ namespace hamalba.Controllers
                     User = user
                 };
 
-                // Determine status and publication date based on button pressed
                 if (PublishLater == true)
                 {
-                    // Use the selected publication date
+                    
                     oglas.DatumObjave = viewModel.DatumObjave;
                     oglas.Status = OglasStatus.CekaNaObjavu;
                 }
                 else
                 {
-                    // Publish now
+                    
                     oglas.DatumObjave = DateTime.Now;
                     oglas.Status = OglasStatus.Aktivan;
                 }
