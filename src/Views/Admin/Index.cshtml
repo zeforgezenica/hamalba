@@ -12,22 +12,27 @@
     </div>
 </form>
 
-<button class="btn btn-secondary mb-3" onclick="toggleTable()">Prikaži/Sakrij korisnike</button>
+<div class="mb-3">
+    <button class="btn btn-primary me-2" onclick="prikaziAktivne()">Aktivni korisnici</button>
+    <button class="btn btn-secondary" onclick="prikaziArhivirane()">Arhivirani korisnici</button>
+</div>
 
-<div id="korisniciTabela">
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
+<!-- Aktivni korisnici -->
+<div id="aktivniDiv">
+    <h4>Aktivni korisnici</h4>
+    <table class="table">
+        <thead>
             <tr>
                 <th>Ime</th>
                 <th>Prezime</th>
                 <th>Email</th>
                 <th>Datum registracije</th>
                 <th>Verifikovan</th>
-                <th>Akcija</th>
+                <th>Akcije</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var korisnik in Model)
+            @foreach (var korisnik in Model.Where(k => k.Arhiviran == 0))
             {
                 <tr>
                     <td>@korisnik.Ime</td>
@@ -45,13 +50,25 @@
                         }
                     </td>
                     <td>
+                    <td>
 
                         <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
                             <input type="hidden" name="id" value="@korisnik.Id" />
                             <button class="btn btn-sm @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
-                                @(korisnik.Verifikovan ? "Deverifikuj" : "Verifikuj")
+                                    @(korisnik.Verifikovan ? "Deverifikuj" : "Verifikuj")
                             </button>
                         </form>
+
+                            @if (korisnik.Arhiviran == 0)
+                            {
+                            <form asp-action="Arhiviraj" asp-controller="Admin" method="post" class="mb-2">
+                                <input type="hidden" name="id" value="@korisnik.Id" />
+                                <button class="btn btn-sm btn-danger">Arhiviraj</button>
+                            </form>
+                            }
+                            
+
+
 
                         <form asp-action="BanUser" asp-controller="Admin" method="post" class="mb-1">
                             <input type="hidden" name="id" value="@korisnik.Id" />
@@ -61,24 +78,57 @@
                             </div>
                         </form>
 
-                        @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
-                        {
+                            @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
+                            {
                             <small class="text-danger">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
-                        }
+                            }
                     </td>
-
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
+<!-- Arhivirani korisnici -->
+<div id="arhiviraniDiv" class="d-none">
+    <h4>Arhivirani korisnici</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ime</th>
+                <th>Prezime</th>
+                <th>Email</th>
+                <th>Datum registracije</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var korisnik in Model.Where(k => k.Arhiviran == 1))
+            {
+                <tr>
+                    <td>@korisnik.Ime</td>
+                    <td>@korisnik.Prezime</td>
+                    <td>@korisnik.Email</td>
+                    <td>@korisnik.DatumRegistracije.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
 @section Scripts {
     <script>
-        function toggleTable() {
-            var table = document.getElementById("korisniciTabela");
-            table.style.display = table.style.display === "none" ? "block" : "none";
+        function prikaziAktivne() {
+            document.getElementById("aktivniDiv").classList.remove("d-none");
+            document.getElementById("arhiviraniDiv").classList.add("d-none");
+        }
+
+        function prikaziArhivirane() {
+            document.getElementById("aktivniDiv").classList.add("d-none");
+            document.getElementById("arhiviraniDiv").classList.remove("d-none");
         }
     </script>
+
 }
 
