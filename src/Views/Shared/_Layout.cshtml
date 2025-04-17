@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="~/hamalba.styles.css" asp-append-version="true" />
 
     <style>
-        /* 🧩 Ovo postavlja visinu tijela i omogućava da footer ostane pri dnu stranice */
         html, body {
             height: 100%;
             margin: 0;
@@ -20,12 +19,10 @@
             flex-direction: column;
         }
 
-        /* 🧩 Main rasteže prostor između headera i footera */
         main {
             flex: 1;
         }
 
-        /* 🎯 Stilovi za bolju responzivnost linkova i ikonica u footeru */
         .footer-links a {
             margin-left: 1rem;
             color: white;
@@ -96,14 +93,12 @@
         </nav>
     </header>
 
-    <!-- ✅ MAIN je sada flex-grow-1 da popuni prostor između headera i footera -->
     <main role="main" class="flex-grow-1">
         <div class="container-fluid px-0">
             @RenderBody()
         </div>
     </main>
 
-    <!-- ✅ FOOTER sada ima padding za bolji izgled i koristi postojeći dizajn -->
     <footer class="text-white pt-5 pb-3 bg-dark">
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-start">
             <!-- Lijeva strana: logo, naziv i copyright -->
