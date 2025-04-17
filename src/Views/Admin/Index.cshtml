@@ -34,7 +34,7 @@
         <tbody>
             @foreach (var korisnik in Model.Where(k => k.Arhiviran == 0))
             {
-                <tr>
+        <tr>
                     <td>@korisnik.Ime</td>
                     <td>@korisnik.Prezime</td>
                     <td>@korisnik.Email</td>
@@ -72,17 +72,15 @@
                                             </button>
                                         </form>
 
-                            @if (korisnik.Arhiviran == 0)
-                            {
-                            <form asp-action="Arhiviraj" asp-controller="Admin" method="post" class="mb-2">
-                                <input type="hidden" name="id" value="@korisnik.Id" />
-                                <button class="btn btn-sm btn-danger">Arhiviraj</button>
-                            </form>
-                            }
-                            
-
-
-
+                                        @if (korisnik.Arhiviran == 0)
+                                        {
+                                            <form asp-action="Arhiviraj" asp-controller="Admin" method="post" class="mb-2">
+                                                <input type="hidden" name="id" value="@korisnik.Id" />
+                                                <button type="submit" class="btn btn-danger w-100">
+                                                    🗃️ Arhiviraj
+                                                </button>
+                                            </form>
+                                        }
                         <form asp-action="BanUser" asp-controller="Admin" method="post" class="mb-1">
                             <input type="hidden" name="id" value="@korisnik.Id" />
                             <div class="input-group input-group-sm">
@@ -117,8 +115,7 @@
                             </div>
                         </div>
                     </td>
-                    </td>
-                </tr>
+            </tr>               
             }
         </tbody>
     </table>
