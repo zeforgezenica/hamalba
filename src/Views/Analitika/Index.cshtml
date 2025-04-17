@@ -1,0 +1,143 @@
+﻿@{
+    ViewData["Title"] = "Analitika";
+    var ukupnoOglasa = (int)ViewData["UkupnoOglasa"];
+    var topGradovi = (Dictionary<string, int>)ViewData["TopGradovi"];
+    var topKorisnici = (Dictionary<string, int>)ViewData["TopKorisnici"];
+    var monthlyAds = (Dictionary<string, int>)ViewData["MonthlyAds"];
+    var topCijene = (Dictionary<string, decimal>)ViewData["TopCijene"];
+}
+
+<h2 class="text-center mb-4 fw-bold page-title">Ukupan broj oglasa: @ukupnoOglasa</h2>
+
+<div class="gradient-line"></div>
+
+<div class="grid-container">
+    <!-- Kartica stil -->
+    <div class="card-style">
+        <h4 class="fw-bold mb-3 text-center"><i class="bi bi-geo-alt-fill"></i> Top gradovi po broju oglasa</h4>
+        <canvas id="gradChart" class="canvas-style"></canvas>
+    </div>
+
+    <!-- Top Korisnici -->
+    <div class="card-style card-top-user">
+        <h4 class="fw-bold mb-3 text-center"><i class="bi bi-person-fill"></i> Korisnici sa najviše postavljenih oglasa</h4>
+        <canvas id="korisnikChart" class="canvas-style"></canvas>
+    </div>
+
+    <!-- Monthly Ads -->
+    <div class="card-style">
+        <h4 class="fw-bold mb-3 text-center"><i class="bi bi-calendar-month"></i> Broj oglasa po mjesecima</h4>
+        <canvas id="monthlyAdsChart" class="canvas-style"></canvas>
+    </div>
+
+    <!-- Top Cijene -->
+    <div class="card-style">
+        <h4 class="fw-bold mb-3 text-center"><i class="bi bi-currency-dollar"></i> Top 10 najskupljih oglasa</h4>
+        <table class="table table-striped" style="margin-top: 0;">
+            <thead>
+                <tr>
+                    <th class="fw-bold">#</th>
+                    <th class="fw-bold">Naslov</th>
+                    <th class="fw-bold">Cijena (KM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int index = 1;
+                    foreach (var ad in topCijene)
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@ad.Key</td>
+                            <td>@ad.Value</td>
+                        </tr>
+                        index++;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const gradChart = new Chart(document.getElementById('gradChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(topGradovi.Keys)),
+                datasets: [{
+                    label: 'Broj oglasa',
+                    data: @Html.Raw(Json.Serialize(topGradovi.Values)),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        const korisnikChart = new Chart(document.getElementById('korisnikChart'), {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(topKorisnici.Keys)),
+                datasets: [{
+                    label: 'Broj oglasa',
+                    data: @Html.Raw(Json.Serialize(topKorisnici.Values)),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 20
+                        }
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const monthlyAdsChart = new Chart(document.getElementById('monthlyAdsChart'), {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(monthlyAds.Keys)),
+                datasets: [{
+                    label: 'Broj oglasa',
+                    data: @Html.Raw(Json.Serialize(monthlyAds.Values)),
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+}
