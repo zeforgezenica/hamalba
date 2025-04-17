@@ -45,28 +45,55 @@
                         }
                     </td>
                     <td>
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#postavkeModal-@korisnik.Id">
+                            ⚙️ Postavke
+                        </button>
 
-                        <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
-                            <input type="hidden" name="id" value="@korisnik.Id" />
-                            <button class="btn btn-sm @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
-                                @(korisnik.Verifikovan ? "Deverifikuj" : "Verifikuj")
-                            </button>
-                        </form>
+                        <!-- Modal za postavke -->
+                        <div class="modal fade" id="postavkeModal-@korisnik.Id" tabindex="-1" aria-labelledby="modalLabel-@korisnik.Id" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title" id="modalLabel-@korisnik.Id">Postavke za @korisnik.Ime @korisnik.Prezime</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
 
-                        <form asp-action="BanUser" asp-controller="Admin" method="post" class="mb-1">
-                            <input type="hidden" name="id" value="@korisnik.Id" />
-                            <div class="input-group input-group-sm">
-                                <input type="date" name="banTrajanje" class="form-control" />
-                                <button class="btn btn-danger" type="submit">Banuj</button>
+                                        <!-- Verifikacija -->
+                                        <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <button class="btn w-100 @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
+                                                @(korisnik.Verifikovan ? "❌ Deverifikuj" : "✅ Verifikuj")
+                                            </button>
+                                        </form>
+
+                                        <!-- Promjena lozinke -->
+                                        <form asp-action="PromijeniLozinku" asp-controller="Admin" method="post" class="mb-2">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <input type="password" name="newPassword" class="form-control mb-2" placeholder="Nova lozinka" required />
+                                            <input type="password" name="confirmPassword" class="form-control mb-2" placeholder="Potvrdi lozinku" required />
+                                            <button type="submit" class="btn btn-primary w-100">🔐 Promijeni lozinku</button>
+                                        </form>
+
+                                        <!-- Placeholder za email reset -->
+                                        <button class="btn btn-outline-secondary w-100 mb-2" disabled>📧 Reset lozinke putem emaila (uskoro)</button>
+
+                                        <!-- Ban -->
+                                        <form asp-action="BanUser" asp-controller="Admin" method="post">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <input type="date" name="banTrajanje" class="form-control mb-2" required />
+                                            <button class="btn btn-danger w-100">🚫 Banuj korisnika</button>
+                                        </form>
+
+                                        @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
+                                        {
+                                            <small class="text-danger">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </form>
-
-                        @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
-                        {
-                            <small class="text-danger">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
-                        }
+                        </div>
                     </td>
-
                 </tr>
             }
         </tbody>
