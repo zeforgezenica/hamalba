@@ -26,7 +26,6 @@ builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
 
 var service = new HuggingFaceService();
 var result = await service.AskAI("Hello");
-builder.Services.AddScoped<MyService>();
 
 
 
