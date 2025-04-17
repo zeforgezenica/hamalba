@@ -92,5 +92,23 @@ namespace hamalba.Controllers
             return View(lista);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Arhiviraj(string id)
+        {
+            var user = await _context.Korisnici.FindAsync(id);
+            if (user == null)
+                return NotFound();
+
+            if (user.Arhiviran == 0) // samo ako već nije arhiviran
+            {
+                user.Arhiviran = 1;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+
     }
 }

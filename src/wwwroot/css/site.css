@@ -12,14 +12,17 @@ html {
     box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #DB6A69;
 }
 
-html {
-    position: relative;
-    min-height: 100%;
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-body {
-    
+main {
+    flex: 1;
 }
+
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
@@ -118,5 +121,116 @@ footer {
         margin-right: 10px;
         color: #fff;
     }
+.login-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.login-left {
+    flex: 1;
+    background-image: url('/images/heroBg.png');
+    background-size: cover;
+    background-position: center;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-box {
+    padding: 40px;
+    border-radius: 25px;
+    text-align: center;
+}
+
+.logo-text {
+    font-size: 4.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.login-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.form-wrapper {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.custom-login-btn {
+    background-color: #1c1c1c;
+    color: white;
+    padding: 0.75rem;
+    font-weight: 500;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+    .custom-login-btn:hover {
+        background-color: #DB6A69;
+        color:white;
+    }
+.register-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+.register-left {
+    flex: 1;
+    background-image: url('/images/heroBg.png');
+    background-size: cover;
+    background-position: center;
+    border-top-right-radius: 100px;
+    border-bottom-right-radius: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+.form-wrapper-register {
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.custom-register-btn {
+    background-color: #1c1c1c;
+    color: white;
+    padding: 0.75rem;
+    font-weight: 500;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+    .custom-register-btn:hover {
+        background-color: #DB6A69;
+        color:white;
+    }
+
 
 
