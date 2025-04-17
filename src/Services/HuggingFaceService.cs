@@ -5,7 +5,7 @@ using System.Text.Json;
 public class HuggingFaceService
 {
     private readonly HttpClient _httpClient;
-    private const string apiKey = "Tvoj AI key";
+    //private const string apiKey = "Tvoj AI key";
 
     public HuggingFaceService()
     {
