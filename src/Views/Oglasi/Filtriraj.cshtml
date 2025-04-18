@@ -1,0 +1,42 @@
+﻿@model hamalba.ViewModels.OglasFilterViewModel
+
+@{
+    ViewData["Title"] = "Filtriraj oglase";
+}
+
+<h2>Filtriraj oglase</h2>
+
+<form asp-action="Filtriraj" method="post" class="mb-4">
+    <div class="form-group">
+        <label>Naziv posla:</label>
+        <input asp-for="NazivPosla" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Lokacija:</label>
+        <input asp-for="Lokacija" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label>Minimalna cijena:</label>
+        <input asp-for="MinimalnaCijena" class="form-control" type="number" />
+    </div>
+
+    <div class="form-group">
+        <label>Maksimalna cijena:</label>
+        <input asp-for="MaksimalnaCijena" class="form-control" type="number" />
+    </div>
+
+    <div class="form-group">
+        <label>Sortiraj rezultate po:</label>
+        <select asp-for="SortOpcija" class="form-control">
+            <option value="">-- Odaberi --</option>
+            <option value="CijenaRastuce">Cijena rastuće</option>
+            <option value="CijenaOpadajuce">Cijena opadajuće</option>
+            <option value="NazivAZ">Naziv A-Z</option>
+            <option value="NazivZA">Naziv Z-A</option>
+        </select>
+    </div>
+
+</form>
+

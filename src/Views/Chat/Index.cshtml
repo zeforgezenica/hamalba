@@ -1,0 +1,17 @@
+﻿@model hamalba.Models.Chat
+
+<h2>AI Info o Projektu</h2>
+
+<form method="post">
+    <label>Postavi pitanje:</label><br />
+    <input type="text" name="Question" value="@Model.Question" style="width: 400px;" />
+    <br /><br />
+    <button type="submit">Pošalji</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Answer))
+{
+    <hr />
+    <h4>Odgovor AI-a:</h4>
+    <p>@Model.Answer</p>
+}

@@ -1,20 +1,32 @@
 ﻿@model List<hamalba.Models.Oglas>
+@using Microsoft.AspNetCore.Identity
+@{
+    var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
+}
 
 <h2>Svi Oglasi</h2>
 
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+        <div class="d-flex justify-content-end">
+            <a class="btn btn-primary ms-2" href="/Oglasi/CreateOglas">Kreiraj oglas</a>
+        </div>
+}
 <table class="table">
     <thead>
         <tr>
             <th>Naslov</th>
-            
             <th>Rok</th>
             <th>Cijena</th>
             <th>Lokacija</th>
-            
             <th>Radnja</th>
         </tr>
     </thead>
     <tbody>
+
+        @{
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
         @foreach (var oglas in Model)
         {
             <tr>
@@ -23,10 +35,22 @@
                 <td>@oglas.Cijena.ToString("N2")</td>
                 <td>@oglas.Lokacija</td>
                 <td>
-                    <form asp-action="PrijaviSe" method="post">
-                        <input type="hidden" name="oglasId" value="@oglas.OglasId" />
-                        <button type="submit" class="btn btn-primary">Prijavi se</button>
-                    </form>
+                    @if (oglas.UserId == currentUserId)
+                    {
+                        <span class="text-muted">Vaš oglas</span>
+                    }
+                    else if (prijavljeniOglasi.Contains(oglas.OglasId))
+                    {
+                        <span class="text-success">Već ste prijavljeni</span>
+                    }
+                    else
+                    {
+                        <form asp-action="PrijaviSe" method="post" style="display:inline;">
+                            <input type="hidden" name="oglasId" value="@oglas.OglasId" />
+                            <button type="submit" class="btn btn-primary">Prijavi se</button>
+                        </form>
+                    }
+
                     <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>
             </tr>

@@ -20,7 +20,7 @@ namespace hamalba.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(string searchIme, int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(string searchIme, string searchEmail, DateTime? startDate, DateTime? endDate, int page = 1, int pageSize = 10)
         {
             var oglasiQuery = _context.Oglasi
                 .Include(o => o.User)
@@ -29,8 +29,21 @@ namespace hamalba.Controllers
 
             if (!string.IsNullOrWhiteSpace(searchIme))
             {
-                oglasiQuery = oglasiQuery
-                    .Where(o => o.User.Ime.Contains(searchIme));
+                oglasiQuery = oglasiQuery.Where(o => o.User != null && o.User.Ime.Contains(searchIme));
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchEmail))
+            {
+                oglasiQuery = oglasiQuery.Where(o => o.User != null && o.User.Email.Contains(searchEmail));
+            }
+
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                oglasiQuery = oglasiQuery.Where(o => o.Datum.Date >= startDate.Value.Date && o.Datum.Date <= endDate.Value.Date);
+            }
+            else if (startDate.HasValue)
+            {
+                oglasiQuery = oglasiQuery.Where(o => o.Datum.Date == startDate.Value.Date);
             }
 
             var totalOglasi = await oglasiQuery.CountAsync();
@@ -42,9 +55,30 @@ namespace hamalba.Controllers
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = (int)Math.Ceiling((double)totalOglasi / pageSize);
             ViewBag.SearchIme = searchIme;
+            ViewBag.SearchEmail = searchEmail;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
 
             return View("~/Views/Admin/OglasiIndex.cshtml", oglasi);
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ArchiveOglas(int id)
+        {
+            var oglas = await _context.Oglasi.FindAsync(id);
+            if (oglas == null)
+                return NotFound();
+
+            oglas.Arhiviran = true;  // Oznaka da je oglas arhiviran
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Oglas je uspješno arhiviran.";
+            return RedirectToAction("Index");
+        }
+
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)

@@ -1,6 +1,6 @@
-﻿// Models/OglasViewModel.cs
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace hamalba.Models
 {
@@ -15,6 +15,8 @@ namespace hamalba.Models
         public string Opis { get; set; }
 
         [Required(ErrorMessage = "Rok je obavezan")]
+        [Display(Name = "Rok oglasa")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime Rok { get; set; }
 
         [Required(ErrorMessage = "Kontakt informacije su obavezne")]
@@ -29,7 +31,11 @@ namespace hamalba.Models
         [StringLength(255, ErrorMessage = "Lokacija ne smije biti duža od 255 znakova")]
         public string Lokacija { get; set; }
 
-        [Required(ErrorMessage = "Status je obavezan")]
-        public OglasStatus Status { get; set; }
+        [Display(Name = "Datum objave")]
+        [Required(ErrorMessage = "Datum objave je obavezan")]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime DatumObjave { get; set; }
+
+        public OglasStatus Status { get; set; } = OglasStatus.Aktivan;
     }
 }

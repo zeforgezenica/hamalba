@@ -11,7 +11,7 @@ using System.Linq;
 using System.IO;
 
 namespace hamalba.Controllers
-{
+{ 
     public class OglasiController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -38,6 +38,8 @@ namespace hamalba.Controllers
 
             try
             {
+                var currentDateTime = DateTime.Now;
+
                 var oglasi = await _context.Oglasi
                     .Include(o => o.User)
                     .ToListAsync();
@@ -64,9 +66,9 @@ namespace hamalba.Controllers
             bool vecPrijavljen = await _context.KorisnikOglasi
                 .AnyAsync(p => p.UserId == user.Id && p.OglasId == oglasId);
 
-            if (vecPrijavljen)
+            if (oglas.UserId == user.Id)
             {
-                TempData["Message"] = "Već ste se prijavili na ovaj oglas.";
+                TempData["Message"] = "Ne možete se prijaviti na oglas koji ste vi objavili.";
                 return RedirectToAction("SviOglasi");
             }
 
@@ -201,10 +203,17 @@ namespace hamalba.Controllers
             TempData["Message"] = "Kandidat je odbijen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
+        //Ponistavanje odluke za odabir kandidata/undo dugme
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PonistiOdluku(int oglasId, string kandidatId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel)
+        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
         {
             _logger.LogInformation("CreateOglas POST started");
 
@@ -231,11 +240,23 @@ namespace hamalba.Controllers
                     Kontakt = viewModel.Kontakt,
                     Cijena = viewModel.Cijena,
                     Lokacija = viewModel.Lokacija,
-                    Status = viewModel.Status,
                     Datum = DateTime.Now,
                     UserId = user.Id,
                     User = user
                 };
+
+                if (PublishLater == true)
+                {
+                    
+                    oglas.DatumObjave = viewModel.DatumObjave;
+                    oglas.Status = OglasStatus.CekaNaObjavu;
+                }
+                else
+                {
+                    
+                    oglas.DatumObjave = DateTime.Now;
+                    oglas.Status = OglasStatus.Aktivan;
+                }
 
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
