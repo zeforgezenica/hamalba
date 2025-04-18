@@ -1,5 +1,8 @@
 ﻿@model List<hamalba.Models.Oglas>
 @using Microsoft.AspNetCore.Identity
+@{
+    var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
+}
 
 <h2>Svi Oglasi</h2>
 
@@ -13,11 +16,9 @@
     <thead>
         <tr>
             <th>Naslov</th>
-            
             <th>Rok</th>
             <th>Cijena</th>
             <th>Lokacija</th>
-            
             <th>Radnja</th>
         </tr>
     </thead>
@@ -30,10 +31,17 @@
                 <td>@oglas.Cijena.ToString("N2")</td>
                 <td>@oglas.Lokacija</td>
                 <td>
-                    <form asp-action="PrijaviSe" method="post">
-                        <input type="hidden" name="oglasId" value="@oglas.OglasId" />
-                        <button type="submit" class="btn btn-primary">Prijavi se</button>
-                    </form>
+                    @if (prijavljeniOglasi.Contains(oglas.OglasId))
+                    {
+                        <span class="text-success">Već ste prijavljeni</span>
+                    }
+                    else
+                    {
+                        <form asp-action="PrijaviSe" method="post">
+                            <input type="hidden" name="oglasId" value="@oglas.OglasId" />
+                            <button type="submit" class="btn btn-primary">Prijavi se</button>
+                        </form>
+                    }
                     <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>
             </tr>

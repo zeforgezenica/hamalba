@@ -7,8 +7,11 @@ using hamalba.Models;
 using System;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+using hamalba.ViewModels;
 namespace hamalba.Controllers
-{
+{ 
     public class OglasiController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -27,6 +30,7 @@ namespace hamalba.Controllers
         {
             return View(new OglasViewModel());
         }
+
         //Prikaz svih oglasa koji su objavljeni
         [HttpGet]
         public async Task<IActionResult> SviOglasi()
@@ -35,11 +39,28 @@ namespace hamalba.Controllers
 
             try
             {
+                var currentDateTime = DateTime.Now;
+
                 var oglasi = await _context.Oglasi
-                    .Include(o => o.User) 
+                    .Include(o => o.User)
+                    .Where(o => o.Status == OglasStatus.Aktivan)
                     .ToListAsync();
 
-                return View(oglasi); 
+                var user = await _userManager.GetUserAsync(User);
+
+                var prijavljeniOglasi = new List<int>();
+
+                if (user != null)
+                {
+                    prijavljeniOglasi = await _context.KorisnikOglasi
+                        .Where(p => p.UserId == user.Id)
+                        .Select(p => p.OglasId)
+                        .ToListAsync();
+                }
+
+                ViewBag.PrijavljeniOglasi = prijavljeniOglasi;
+
+                return View(oglasi);
             }
             catch (Exception ex)
             {
@@ -48,8 +69,68 @@ namespace hamalba.Controllers
             }
         }
 
-        //Kontroler za prijavu na neki oglas
+        //Filtracija
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var model = new OglasFilterViewModel
+            {
+                Rezultati = _context.Oglasi.ToList()
+            };
 
+            return View(model); 
+        }
+
+
+        [HttpPost]
+        public IActionResult Index(OglasFilterViewModel filter, string akcija)
+        {
+            var query = _context.Oglasi.AsQueryable();
+
+            if (akcija == "filtriraj")
+            {
+                if (!string.IsNullOrEmpty(filter.NazivPosla))
+                    query = query.Where(o => o.Naslov.Contains(filter.NazivPosla));
+
+                if (!string.IsNullOrEmpty(filter.Lokacija))
+                    query = query.Where(o => o.Lokacija.Contains(filter.Lokacija));
+
+                if (filter.MinimalnaCijena.HasValue)
+                    query = query.Where(o => o.Cijena >= filter.MinimalnaCijena);
+
+                if (filter.MaksimalnaCijena.HasValue)
+                    query = query.Where(o => o.Cijena <= filter.MaksimalnaCijena);
+            }
+
+            if (akcija == "sortiraj")
+            {
+                switch (filter.SortOpcija)
+                {
+                    case SortOpcije.CijenaUzlazno:
+                        query = query.OrderBy(o => o.Cijena);
+                        break;
+                    case SortOpcije.CijenaSilazno:
+                        query = query.OrderByDescending(o => o.Cijena);
+                        break;
+                    case SortOpcije.NazivPoslaAZ:
+                        query = query.OrderBy(o => o.Naslov);
+                        break;
+                    case SortOpcije.NazivPoslaZA:
+                        query = query.OrderByDescending(o => o.Naslov);
+                        break;
+                }
+            }
+
+            filter.Rezultati = query.ToList();
+
+            return View(filter); // ista stranica: sviOglasi 
+        }
+
+
+
+
+
+        //Kontroler za prijavu na neki oglas
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PrijaviSe(int oglasId)
@@ -58,16 +139,6 @@ namespace hamalba.Controllers
             if (user == null)
             {
                 return Challenge();
-            }
-
-            // Provjera da korisnik već nije prijavljen
-            bool vecPrijavljen = await _context.KorisnikOglasi
-                .AnyAsync(p => p.UserId == user.Id && p.OglasId == oglasId);
-
-            if (vecPrijavljen)
-            {
-                TempData["Message"] = "Već ste se prijavili na ovaj oglas.";
-                return RedirectToAction("SviOglasi");
             }
 
             var prijava = new KorisnikOglas
@@ -79,9 +150,11 @@ namespace hamalba.Controllers
             _context.KorisnikOglasi.Add(prijava);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Uspješno ste se prijavili na oglas!";
+            TempData["ToastMessage"] = "Uspješno ste se prijavili na oglas!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("SviOglasi");
         }
+
         //Single View oglasa
         [HttpGet]
         public async Task<IActionResult> Detalji(int id)
@@ -105,6 +178,7 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
         //Pregled prijavljenih kandidata
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
@@ -156,7 +230,7 @@ namespace hamalba.Controllers
             TempData["Message"] = "Kandidat je prihvaćen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
-        
+
         //Odbijanje kandidata za posao
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -185,16 +259,9 @@ namespace hamalba.Controllers
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
 
-
-
-
-
-
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel)
+        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
         {
             _logger.LogInformation("CreateOglas POST started");
 
@@ -221,17 +288,39 @@ namespace hamalba.Controllers
                     Kontakt = viewModel.Kontakt,
                     Cijena = viewModel.Cijena,
                     Lokacija = viewModel.Lokacija,
-                    Status = viewModel.Status,
                     Datum = DateTime.Now,
                     UserId = user.Id,
                     User = user
                 };
 
+                if (PublishLater == true)
+                {
+                    
+                    oglas.DatumObjave = viewModel.DatumObjave;
+                    oglas.Status = OglasStatus.CekaNaObjavu;
+                }
+                else
+                {
+                    
+                    oglas.DatumObjave = DateTime.Now;
+                    oglas.Status = OglasStatus.Aktivan;
+                }
+
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Oglas created successfully. ID: {OglasId}", oglas.OglasId);
-                return RedirectToAction("Index", "Home");
+                _logger.LogInformation("Oglas created successfully. ID: {OglasId}, Status: {Status}", oglas.OglasId, oglas.Status);
+
+                if (oglas.Status == OglasStatus.CekaNaObjavu)
+                {
+                    TempData["Message"] = $"Oglas kreiran i bit će objavljen {oglas.DatumObjave.ToString("dd/MM/yyyy HH:mm")}";
+                }
+                else
+                {
+                    TempData["Message"] = "Oglas uspješno kreiran i objavljen!";
+                }
+
+                return RedirectToAction("SviOglasi", "Oglasi");
             }
             catch (DbUpdateException ex)
             {
