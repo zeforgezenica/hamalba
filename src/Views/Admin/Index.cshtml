@@ -34,7 +34,7 @@
         <tbody>
             @foreach (var korisnik in Model.Where(k => k.Arhiviran == 0))
             {
-                <tr>
+        <tr>
                     <td>@korisnik.Ime</td>
                     <td>@korisnik.Prezime</td>
                     <td>@korisnik.Email</td>
@@ -50,41 +50,99 @@
                         }
                     </td>
                     <td>
-                    <td>
+                        <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#postavkeModal-@korisnik.Id">
+                            ⚙️ Postavke
+                        </button>
 
-                        <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
-                            <input type="hidden" name="id" value="@korisnik.Id" />
-                            <button class="btn btn-sm @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
-                                    @(korisnik.Verifikovan ? "Deverifikuj" : "Verifikuj")
-                            </button>
-                        </form>
+                        <!-- Glavni modal - Postavke -->
+                        <div class="modal fade" id="postavkeModal-@korisnik.Id" tabindex="-1" aria-labelledby="modalLabel-@korisnik.Id" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title">Postavke za @korisnik.Ime @korisnik.Prezime</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
 
-                            @if (korisnik.Arhiviran == 0)
-                            {
-                            <form asp-action="Arhiviraj" asp-controller="Admin" method="post" class="mb-2">
-                                <input type="hidden" name="id" value="@korisnik.Id" />
-                                <button class="btn btn-sm btn-danger">Arhiviraj</button>
-                            </form>
-                            }
-                            
+                                        <form asp-action="ToggleVerifikacija" asp-controller="Admin" method="post" class="mb-2">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <button class="btn w-100 @(korisnik.Verifikovan ? "btn-warning" : "btn-success")">
+                                                @(korisnik.Verifikovan ? "❌ Deverifikuj" : "✅ Verifikuj")
+                                            </button>
+                                        </form>
 
+                                        @if (korisnik.Arhiviran == 0)
+                                        {
+                                            <form asp-action="Arhiviraj" asp-controller="Admin" method="post" class="mb-2">
+                                                <input type="hidden" name="id" value="@korisnik.Id" />
+                                                <button type="submit" class="btn btn-warning w-100">🗃️ Arhiviraj</button>
+                                            </form>
+                                        }
 
+                                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal" data-bs-target="#sifraModal-@korisnik.Id" data-bs-dismiss="modal">
+                                            🔐 Promijeni lozinku
+                                        </button>
 
-                        <form asp-action="BanUser" asp-controller="Admin" method="post" class="mb-1">
-                            <input type="hidden" name="id" value="@korisnik.Id" />
-                            <div class="input-group input-group-sm">
-                                <input type="date" name="banTrajanje" class="form-control" />
-                                <button class="btn btn-danger" type="submit">Banuj</button>
+                                        <button class="btn btn-danger w-100 mb-2" data-bs-toggle="modal" data-bs-target="#banModal-@korisnik.Id" data-bs-dismiss="modal">
+                                            🚫 Banuj korisnika
+                                        </button>
+
+                                        <button class="btn btn-outline-secondary w-100" disabled>📧 Reset putem emaila (uskoro)</button>
+
+                                        @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
+                                        {
+                                            <small class="text-danger d-block mt-2">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        </div>
 
-                            @if (korisnik.BanTrajanje != null && korisnik.BanTrajanje > DateTime.UtcNow)
-                            {
-                            <small class="text-danger">Ban do @korisnik.BanTrajanje?.ToString("yyyy-MM-dd")</small>
-                            }
+                        <div class="modal fade" id="sifraModal-@korisnik.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-primary text-white">
+                                        <h5 class="modal-title">Promjena lozinke</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form asp-action="PromijeniLozinku" asp-controller="Admin" method="post">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <input type="password" name="newPassword" class="form-control mb-2" placeholder="Nova lozinka" required />
+                                            <input type="password" name="confirmPassword" class="form-control mb-3" placeholder="Potvrdi lozinku" required />
+                                            <button type="submit" class="btn btn-primary w-100">✅ Potvrdi</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal fade" id="banModal-@korisnik.Id" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-danger text-white">
+                                        <h5 class="modal-title">Banuj korisnika</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form asp-action="BanUser" asp-controller="Admin" method="post">
+                                            <input type="hidden" name="id" value="@korisnik.Id" />
+                                            <div class="mb-3">
+                                                <label>Datum do kada traje ban:</label>
+                                                <input type="date" name="banTrajanje" class="form-control" required />
+                                            </div>
+                                            <div class="mb-3">
+                                                <label>Razlog bana:</label>
+                                                <textarea name="banRazlog" class="form-control" rows="3" placeholder="Upišite razlog..." required></textarea>
+                                            </div>
+                                            <button class="btn btn-danger w-100">🚫 Potvrdi ban</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </td>
-                    </td>
-                </tr>
+            </tr>               
             }
         </tbody>
     </table>
