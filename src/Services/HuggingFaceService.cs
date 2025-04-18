@@ -11,7 +11,7 @@ public class HuggingFaceService
     {
         _httpClient = new HttpClient();
         _httpClient.BaseAddress = new Uri("https://api-inference.huggingface.co/");
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
+        //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
     }
 
     public async Task<string> AskAI(string input)
