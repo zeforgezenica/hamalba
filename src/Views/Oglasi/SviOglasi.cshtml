@@ -16,6 +16,10 @@
         </tr>
     </thead>
     <tbody>
+
+        @{
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
         @foreach (var oglas in Model)
         {
             <tr>
@@ -24,17 +28,22 @@
                 <td>@oglas.Cijena.ToString("N2")</td>
                 <td>@oglas.Lokacija</td>
                 <td>
-                    @if (prijavljeniOglasi.Contains(oglas.OglasId))
+                    @if (oglas.UserId == currentUserId)
+                    {
+                        <span class="text-muted">Vaš oglas</span>
+                    }
+                    else if (prijavljeniOglasi.Contains(oglas.OglasId))
                     {
                         <span class="text-success">Već ste prijavljeni</span>
                     }
                     else
                     {
-                        <form asp-action="PrijaviSe" method="post">
+                        <form asp-action="PrijaviSe" method="post" style="display:inline;">
                             <input type="hidden" name="oglasId" value="@oglas.OglasId" />
                             <button type="submit" class="btn btn-primary">Prijavi se</button>
                         </form>
                     }
+
                     <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>
             </tr>

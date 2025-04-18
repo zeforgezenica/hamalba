@@ -75,6 +75,19 @@ namespace hamalba.Controllers
                 return Challenge();
             }
 
+            //Onemogucavanje prijave kreatoru oglasa
+            var oglas = await _context.Oglasi.FindAsync(oglasId);
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            if (oglas.UserId == user.Id)
+            {
+                TempData["Message"] = "Ne možete se prijaviti na oglas koji ste vi objavili.";
+                return RedirectToAction("SviOglasi");
+            }
+
             var prijava = new KorisnikOglas
             {
                 UserId = user.Id,
@@ -191,13 +204,27 @@ namespace hamalba.Controllers
             TempData["Message"] = "Kandidat je odbijen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
+        //Ponistavanje odluke za odabir kandidata/undo dugme
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PonistiOdluku(int oglasId, string kandidatId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
 
+            var oglas = await _context.Oglasi.FindAsync(oglasId);
+            if (oglas == null || oglas.UserId != user.Id) return Forbid();
 
+            var prijava = await _context.KorisnikOglasi
+                .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.UserId == kandidatId);
 
+            if (prijava == null) return NotFound();
 
+            prijava.Status = -1;
+            await _context.SaveChangesAsync();
 
-
-
+            return RedirectToAction("PregledKandidata", new { id = oglasId });
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

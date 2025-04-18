@@ -44,24 +44,32 @@ else
                     }
                 </td>
                 <td>
-                    @if (prijava.Status == -1 && prijava.Oglas.UserId == currentUserId)
-                    {
-                        <form asp-action="PrihvatiKandidata" method="post" style="display:inline;">
-                            <input type="hidden" name="oglasId" value="@oglasId" />
-                            <input type="hidden" name="kandidatId" value="@prijava.UserId" />
-                            <button type="submit" class="btn btn-success btn-sm">Prihvati</button>
-                        </form>
-                        <form asp-action="OdbijKandidata" method="post" style="display:inline; margin-left: 5px;">
-                            <input type="hidden" name="oglasId" value="@oglasId" />
-                            <input type="hidden" name="kandidatId" value="@prijava.UserId" />
-                            <button type="submit" class="btn btn-danger btn-sm">Odbij</button>
-                        </form>
-                    }
+                        @if (prijava.Status == -1 && prijava.Oglas.UserId == currentUserId)
+                        {
+                            <form asp-action="PrihvatiKandidata" method="post" style="display:inline;">
+                                <input type="hidden" name="oglasId" value="@oglasId" />
+                                <input type="hidden" name="kandidatId" value="@prijava.UserId" />
+                                <button type="submit" class="btn btn-success btn-sm">Prihvati</button>
+                            </form>
+                            <form asp-action="OdbijKandidata" method="post" style="display:inline; margin-left: 5px;">
+                                <input type="hidden" name="oglasId" value="@oglasId" />
+                                <input type="hidden" name="kandidatId" value="@prijava.UserId" />
+                                <button type="submit" class="btn btn-danger btn-sm">Odbij</button>
+                            </form>
+                        }
+                        else if ((prijava.Status == 1 || prijava.Status == 0) && prijava.Oglas.UserId == currentUserId)
+                        {
+                            <form asp-action="PonistiOdluku" method="post" style="display:inline;">
+                                <input type="hidden" name="oglasId" value="@oglasId" />
+                                <input type="hidden" name="kandidatId" value="@prijava.UserId" />
+                                <button type="submit" class="btn btn-warning btn-sm">Poništi odluku</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
 
-                    else
-                    {
-                        <span>-</span>
-                    }
                 </td>
             </tr>
         }
