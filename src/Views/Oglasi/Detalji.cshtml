@@ -54,5 +54,13 @@
 @if (isOwner)
 {
     <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="btn btn-info mt-3">Pregled kandidata</a>
-}
 
+    @if (Model.Status == OglasStatus.InProces)
+    {
+        <form asp-action="OznaciKaoObavljen" method="post" style="display:inline; margin-left: 10px;">
+            <input type="hidden" name="oglasId" value="@Model.OglasId" />
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success">Označi posao kao obavljen</button>
+        </form>
+    }
+}

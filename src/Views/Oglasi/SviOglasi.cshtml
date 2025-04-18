@@ -19,6 +19,7 @@
             <th>Rok</th>
             <th>Cijena</th>
             <th>Lokacija</th>
+            <th>Status</th>
             <th>Radnja</th>
         </tr>
     </thead>
@@ -30,17 +31,22 @@
                 <td>@oglas.Rok.ToShortDateString()</td>
                 <td>@oglas.Cijena.ToString("N2")</td>
                 <td>@oglas.Lokacija</td>
+                <td>@oglas.Status.ToString()</td>
                 <td>
-                    @if (prijavljeniOglasi.Contains(oglas.OglasId))
-                    {
-                        <span class="text-success">Već ste prijavljeni</span>
-                    }
-                    else
+                    @if (oglas.Status == OglasStatus.Aktivan)
                     {
                         <form asp-action="PrijaviSe" method="post">
                             <input type="hidden" name="oglasId" value="@oglas.OglasId" />
                             <button type="submit" class="btn btn-primary">Prijavi se</button>
                         </form>
+                    }
+                    else if (oglas.Status == OglasStatus.InProces)
+                    {
+                        <span class="text-info">Posao je u procesu</span>
+                    }
+                    else if (oglas.Status == OglasStatus.Obavljen)
+                    {
+                        <span class="text-success">Posao je obavljen</span>
                     }
                     <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>

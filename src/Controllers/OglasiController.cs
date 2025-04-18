@@ -42,9 +42,10 @@ namespace hamalba.Controllers
                 var currentDateTime = DateTime.Now;
 
                 var oglasi = await _context.Oglasi
-                    .Include(o => o.User)
-                    .Where(o => o.Status == OglasStatus.Aktivan)
-                    .ToListAsync();
+                 .Include(o => o.User)
+                 .Where(o => o.Status == OglasStatus.Aktivan || o.Status == OglasStatus.InProces || o.Status==OglasStatus.Obavljen)
+                 .ToListAsync();
+
 
                 var user = await _userManager.GetUserAsync(User);
 
@@ -179,7 +180,7 @@ namespace hamalba.Controllers
             }
         }
 
-        //Pregled prijavljenih kandidata
+        //Pregled prijavljenih kandidata       
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
         {
@@ -199,6 +200,7 @@ namespace hamalba.Controllers
 
             ViewBag.OglasNaslov = oglas.Naslov;
             ViewBag.OglasId = oglas.OglasId;
+            ViewBag.OglasStatus = oglas.Status;
 
             return View(prijave);
         }
@@ -225,6 +227,10 @@ namespace hamalba.Controllers
             }
 
             prijava.Status = 1;
+
+            // Update oglasa u InProces
+            oglas.Status = OglasStatus.InProces;
+
             await _context.SaveChangesAsync();
 
             TempData["Message"] = "Kandidat je prihvaćen.";
@@ -334,6 +340,32 @@ namespace hamalba.Controllers
             }
 
             return View(viewModel);
+        }
+        // Oglas obavljen
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> OznaciKaoObavljen(int oglasId)
+        {
+            var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            if (oglas == null || currentUser == null || oglas.UserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            
+            if (oglas.Status != OglasStatus.InProces)
+            {
+                TempData["Error"] = "Samo poslovi koji su u procesu mogu biti označeni kao obavljeni.";
+                return RedirectToAction("Detalji", new { id = oglasId });
+            }
+
+            oglas.Status = OglasStatus.Obavljen;
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Posao je uspješno označen kao obavljen.";
+            return RedirectToAction("Detalji", new { id = oglasId });
         }
     }
 }
