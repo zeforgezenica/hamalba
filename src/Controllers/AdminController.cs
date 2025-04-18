@@ -32,13 +32,14 @@ namespace hamalba.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> BanUser(string id, DateTime? banTrajanje)
+        public async Task<IActionResult> BanUser(string id, DateTime? banTrajanje, string? banRazlog)
         {
             var user = await _context.Korisnici.FindAsync(id);
             if (user == null)
                 return NotFound();
 
             user.BanTrajanje = banTrajanje;
+            user.BanRazlog = banRazlog;
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
