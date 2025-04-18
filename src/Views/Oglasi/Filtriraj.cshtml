@@ -27,24 +27,16 @@
         <input asp-for="MaksimalnaCijena" class="form-control" type="number" />
     </div>
 
-    <button type="submit" class="btn btn-success mt-2">Filtriraj</button>
+    <div class="form-group">
+        <label>Sortiraj rezultate po:</label>
+        <select asp-for="SortOpcija" class="form-control">
+            <option value="">-- Odaberi --</option>
+            <option value="CijenaRastuce">Cijena rastuće</option>
+            <option value="CijenaOpadajuce">Cijena opadajuće</option>
+            <option value="NazivAZ">Naziv A-Z</option>
+            <option value="NazivZA">Naziv Z-A</option>
+        </select>
+    </div>
+
 </form>
-
-@if (Model.Rezultati != null && Model.Rezultati.Any())
-{
-    <h4>Rezultati:</h4>
-    <ul class="list-group">
-        @foreach (var oglas in Model.Rezultati)
-        {
-            <li class="list-group-item">
-                <strong>@oglas.Naslov</strong> - @oglas.Lokacija - @oglas.Cijena KM
-            </li>
-        }
-    </ul>
-}
-else if (Model.Rezultati != null)
-{
-    <div class="alert alert-warning">Nema rezultata za prikaz.</div>
-}
-
 
