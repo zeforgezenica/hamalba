@@ -60,6 +60,12 @@ public class AnalitikaController : Controller
     .Select(o => new { o.Naslov, o.Cijena })
     .ToDictionaryAsync(x => x.Naslov, x => x.Cijena);
 
+        var statusi = await _context.Oglasi
+    .GroupBy(o => o.Status)
+    .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+    .ToDictionaryAsync(x => x.Status, x => x.Count);
+
+        ViewData["StatusiOglasa"] = statusi;
         ViewData["TopCijene"] = topCijeneDict;
         ViewData["UkupnoOglasa"] = ukupnoOglasa;
         ViewData["TopGradovi"] = gradoviDict;
