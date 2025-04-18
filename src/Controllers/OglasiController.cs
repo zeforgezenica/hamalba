@@ -46,6 +46,20 @@ namespace hamalba.Controllers
                     .Where(o => o.Status == OglasStatus.Aktivan)
                     .ToListAsync();
 
+                var user = await _userManager.GetUserAsync(User);
+
+                var prijavljeniOglasi = new List<int>();
+
+                if (user != null)
+                {
+                    prijavljeniOglasi = await _context.KorisnikOglasi
+                        .Where(p => p.UserId == user.Id)
+                        .Select(p => p.OglasId)
+                        .ToListAsync();
+                }
+
+                ViewBag.PrijavljeniOglasi = prijavljeniOglasi;
+
                 return View(oglasi);
             }
             catch (Exception ex)
@@ -127,16 +141,6 @@ namespace hamalba.Controllers
                 return Challenge();
             }
 
-            // Provjera da korisnik već nije prijavljen
-            bool vecPrijavljen = await _context.KorisnikOglasi
-                .AnyAsync(p => p.UserId == user.Id && p.OglasId == oglasId);
-
-            if (vecPrijavljen)
-            {
-                TempData["Message"] = "Već ste se prijavili na ovaj oglas.";
-                return RedirectToAction("SviOglasi");
-            }
-
             var prijava = new KorisnikOglas
             {
                 UserId = user.Id,
@@ -146,7 +150,8 @@ namespace hamalba.Controllers
             _context.KorisnikOglasi.Add(prijava);
             await _context.SaveChangesAsync();
 
-            TempData["Message"] = "Uspješno ste se prijavili na oglas!";
+            TempData["ToastMessage"] = "Uspješno ste se prijavili na oglas!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("SviOglasi");
         }
 
