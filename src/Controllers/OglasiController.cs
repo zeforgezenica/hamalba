@@ -7,8 +7,9 @@ using hamalba.Models;
 using System;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using hamalba.ViewModels;
 namespace hamalba.Controllers
-{
+{ 
     public class OglasiController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -47,6 +48,67 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
+        //Filtracija
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var model = new OglasFilterViewModel
+            {
+                Rezultati = _context.Oglasi.ToList()
+            };
+
+            return View(model); 
+        }
+
+
+        [HttpPost]
+        public IActionResult Index(OglasFilterViewModel filter, string akcija)
+        {
+            var query = _context.Oglasi.AsQueryable();
+
+            if (akcija == "filtriraj")
+            {
+                if (!string.IsNullOrEmpty(filter.NazivPosla))
+                    query = query.Where(o => o.Naslov.Contains(filter.NazivPosla));
+
+                if (!string.IsNullOrEmpty(filter.Lokacija))
+                    query = query.Where(o => o.Lokacija.Contains(filter.Lokacija));
+
+                if (filter.MinimalnaCijena.HasValue)
+                    query = query.Where(o => o.Cijena >= filter.MinimalnaCijena);
+
+                if (filter.MaksimalnaCijena.HasValue)
+                    query = query.Where(o => o.Cijena <= filter.MaksimalnaCijena);
+            }
+
+            if (akcija == "sortiraj")
+            {
+                switch (filter.SortOpcija)
+                {
+                    case SortOpcije.CijenaUzlazno:
+                        query = query.OrderBy(o => o.Cijena);
+                        break;
+                    case SortOpcije.CijenaSilazno:
+                        query = query.OrderByDescending(o => o.Cijena);
+                        break;
+                    case SortOpcije.NazivPoslaAZ:
+                        query = query.OrderBy(o => o.Naslov);
+                        break;
+                    case SortOpcije.NazivPoslaZA:
+                        query = query.OrderByDescending(o => o.Naslov);
+                        break;
+                }
+            }
+
+            filter.Rezultati = query.ToList();
+
+            return View(filter); // ista stranica: sviOglasi 
+        }
+
+
+
+
 
         //Kontroler za prijavu na neki oglas
 
