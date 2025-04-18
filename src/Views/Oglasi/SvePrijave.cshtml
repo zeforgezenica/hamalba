@@ -1,0 +1,35 @@
+﻿@model IEnumerable<hamalba.Models.KorisnikOglas>
+
+@{
+    ViewData["Title"] = "Prijave na oglas";
+}
+
+<h2>Prijave na oglas</h2>
+
+@if (!Model.Any())
+{
+        <p>Nema prijava na ovaj oglas.</p>
+}
+else
+{
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ime korisnika</th>
+                    <th>Email</th>
+                    <th>Datum prijave</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var prijava in Model)
+            {
+                        <tr>
+                            <td>@prijava.User.Ime @prijava.User.Prezime</td>
+                            <td>@prijava.User.Email</td
+                        </tr>
+            }
+            </tbody>
+        </table>
+}
+
+<a asp-action="SviOglasi" class="btn btn-primary">Natrag na oglase</a>

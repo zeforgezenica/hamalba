@@ -1,63 +1,136 @@
 ﻿@model hamalba.Models.OglasViewModel
-
 @{
     ViewData["Title"] = "Kreiraj novi oglas";
 }
 
-<h2 class="mb-4">Kreiraj novi oglas</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Kreiraj novi oglas</h2>
 
-<form asp-action="CreateOglas" method="post">
-    @Html.AntiForgeryToken()
+            <form asp-action="CreateOglas" method="post" id="oglasForm">
+                @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-    <div class="form-group mb-3">
-        <label asp-for="Naslov" class="form-label"></label>
-        <input asp-for="Naslov" class="form-control" />
-        <span asp-validation-for="Naslov" class="text-danger"></span>
+                <!-- Naslov -->
+                <div class="mb-3">
+                    <label asp-for="Naslov" class="form-label"></label>
+                    <input asp-for="Naslov" class="form-control" />
+                    <span asp-validation-for="Naslov" class="text-danger"></span>
+                </div>
+
+                <!-- Opis -->
+                <div class="mb-3">
+                    <label asp-for="Opis" class="form-label"></label>
+                    <textarea asp-for="Opis" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Opis" class="text-danger"></span>
+                </div>
+
+                <!-- Zakazivanje -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="schedulePublication" name="SchedulePublication">
+                    <label class="form-check-label" for="schedulePublication">Zakaži objavu za kasnije</label>
+                </div>
+
+                <!-- Datum objave (sakriven inicialno) -->
+                <div class="mb-3" id="publicationDateContainer" style="display: none;">
+                    <label asp-for="DatumObjave" class="form-label">Datum i vrijeme objave</label>
+                    <input asp-for="DatumObjave" type="datetime-local" class="form-control" id="datumObjave" />
+                    <span asp-validation-for="DatumObjave" class="text-danger"></span>
+                    <small class="text-muted">Odaberite datum objave (bit će prikazan nakon ovog datuma)</small>
+                </div>
+
+                <!-- Rok trajanja -->
+                <div class="mb-3">
+                    <label asp-for="Rok" class="form-label">Rok trajanja oglasa</label>
+                    <input asp-for="Rok" type="datetime-local" class="form-control" id="rokOglasa" />
+                    <span asp-validation-for="Rok" class="text-danger"></span>
+                </div>
+
+                <!-- Ostala polja -->
+                <div class="mb-3">
+                    <label asp-for="Cijena" class="form-label"></label>
+                    <input asp-for="Cijena" class="form-control" />
+                    <span asp-validation-for="Cijena" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Lokacija" class="form-label"></label>
+                    <input asp-for="Lokacija" class="form-control" />
+                    <span asp-validation-for="Lokacija" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Kontakt" class="form-label"></label>
+                    <input asp-for="Kontakt" class="form-control" />
+                    <span asp-validation-for="Kontakt" class="text-danger"></span>
+                </div>
+
+                <!-- Dugmad -->
+                <div class="btn-group mt-4">
+                    <button type="submit" name="PublishNow" value="true" class="btn btn-success" id="publishNowBtn">Objavi odmah</button>
+                    <button type="submit" name="PublishLater" value="true" class="btn btn-primary" id="publishLaterBtn" style="display: none;">Zakaži objavu</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Opis" class="form-label"></label>
-        <textarea asp-for="Opis" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Opis" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Rok" class="form-label"></label>
-        <input asp-for="Rok" type="datetime-local" class="form-control" />
-        <span asp-validation-for="Rok" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Cijena" class="form-label"></label>
-        <input asp-for="Cijena" class="form-control" />
-        <span asp-validation-for="Cijena" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Lokacija" class="form-label"></label>
-        <input asp-for="Lokacija" class="form-control" />
-        <span asp-validation-for="Lokacija" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-3">
-        <label asp-for="Kontakt" class="form-label"></label>
-        <input asp-for="Kontakt" class="form-control" />
-        <span asp-validation-for="Kontakt" class="text-danger"></span>
-    </div>
-
-    <div class="form-group mb-4">
-        <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<OglasStatus>()"></select>
-        <span asp-validation-for="Status" class="text-danger"></span>
-    </div>
-
-    <button type="submit" class="btn btn-success">Objavi oglas</button>
-</form>
+</div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elementi
+            const scheduleCheckbox = document.getElementById('schedulePublication');
+            const publicationDateContainer = document.getElementById('publicationDateContainer');
+            const publishNowBtn = document.getElementById('publishNowBtn');
+            const publishLaterBtn = document.getElementById('publishLaterBtn');
+            const datumObjaveInput = document.getElementById('datumObjave');
+            const rokInput = document.getElementById('rokOglasa');
+
+            // Postavi defaultne datume
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+
+            const nextWeek = new Date(now);
+            nextWeek.setDate(nextWeek.getDate() + 7);
+
+            // Formatiraj za datetime-local input
+            function formatForInput(date) {
+                return date.toISOString().slice(0, 16);
+            }
+
+            // Inicijalne vrijednosti
+            if (!datumObjaveInput.value) {
+                datumObjaveInput.value = formatForInput(tomorrow);
+            }
+
+            if (!rokInput.value) {
+                rokInput.value = formatForInput(nextWeek);
+            }
+
+            // Toggle logika
+            scheduleCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    publicationDateContainer.style.display = 'block';
+                    publishNowBtn.style.display = 'none';
+                    publishLaterBtn.style.display = 'inline-block';
+                } else {
+                    publicationDateContainer.style.display = 'none';
+                    publishNowBtn.style.display = 'inline-block';
+                    publishLaterBtn.style.display = 'none';
+                }
+            });
+
+            // Inicijalna provjera
+            if (scheduleCheckbox.checked) {
+                publicationDateContainer.style.display = 'block';
+                publishNowBtn.style.display = 'none';
+                publishLaterBtn.style.display = 'inline-block';
+            }
+        });
+    </script>
 }

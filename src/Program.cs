@@ -30,6 +30,9 @@ builder.Services.AddIdentity<Korisnik, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+
+builder.Services.AddHostedService<OglasiStatusService>();
+
 var app = builder.Build();
 
 // HTTP pipeline
@@ -62,8 +65,6 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await RoleSeeder.SeedRolesAndAdmin(services);
 }
-
-
 
 app.Run();
 
