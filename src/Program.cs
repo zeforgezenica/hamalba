@@ -1,4 +1,4 @@
-using hamalba.Services;
+﻿using hamalba.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using hamalba.Models;
@@ -6,12 +6,36 @@ using hamalba.DataBase;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using hamalba.Helpers;
+using hamalba.Filters;
+using Serilog;
+
+
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File(
+        path: "Logs/global-log.txt",
+        rollingInterval: RollingInterval.Infinite,
+        shared: true 
+    )
+    .CreateLogger();
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
 builder.Services.AddSingleton<DatabaseConnection>();
 
 // Registruj servise
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ActivityLogFilter>();
+});
+
+builder.Services.AddScoped<ActivityLogFilter>();
+
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddRazorPages();
 
