@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace hamalba.Controllers
 {
@@ -19,7 +22,6 @@ namespace hamalba.Controllers
             _userManager = userManager;
             _context = context;
             _logger = logger;
-
         }
 
         [HttpGet]
@@ -63,6 +65,11 @@ namespace hamalba.Controllers
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
                 _logger.LogInformation("Oglas saved successfully with ID: {OglasId}", oglas.OglasId);
 
                 return RedirectToAction("Index", "Home");
@@ -72,7 +79,6 @@ namespace hamalba.Controllers
                 _logger.LogError(ex, "Error occurred while saving Oglas.");
                 return View(oglas);
             }
-
         }
     }
 }

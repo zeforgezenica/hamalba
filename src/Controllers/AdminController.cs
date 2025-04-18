@@ -3,10 +3,14 @@ using hamalba.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace hamalba.Controllers
 {
-    [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,6 +30,11 @@ namespace hamalba.Controllers
             user.Verifikovan = !user.Verifikovan;
             await _context.SaveChangesAsync();
 
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin toggled verifikacija for: {user.Email} | Status: {(user.Verifikovan ? "Verifikovan" : "Ne-verifikovan")}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
+
             return RedirectToAction("Index");
         }
 
@@ -38,6 +47,11 @@ namespace hamalba.Controllers
 
             user.BanTrajanje = banTrajanje;
             await _context.SaveChangesAsync();
+
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin postavio ban korisniku: {user.Email} | Do: {banTrajanje:yyyy-MM-dd}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
 
             return RedirectToAction("Index");
         }
@@ -65,16 +79,29 @@ namespace hamalba.Controllers
             if (user == null)
                 return NotFound();
 
-            if (user.Arhiviran == 0) // samo ako već nije arhiviran
+            if (user.Arhiviran == 0)
             {
                 user.Arhiviran = 1;
                 await _context.SaveChangesAsync();
+
+                var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin arhivirao korisnika: {user.Email}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
             }
 
             return RedirectToAction("Index");
         }
 
+        public IActionResult ActivityLog()
+        {
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
 
+            if (!System.IO.File.Exists(logPath))
+                return Content("No logs yet.");
 
+            var content = System.IO.File.ReadAllText(logPath);
+            return Content(content, "text/plain");
+        }
     }
 }

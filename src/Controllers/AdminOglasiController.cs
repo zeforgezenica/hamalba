@@ -3,6 +3,8 @@ using hamalba.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -89,8 +91,13 @@ namespace hamalba.Controllers
             oglas.Status = viewModel.Status;
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Izmjene su sačuvane.";
 
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin uredio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
+
+            TempData["SuccessMessage"] = "Izmjene su sačuvane.";
             return RedirectToAction("Index");
         }
 
@@ -107,11 +114,17 @@ namespace hamalba.Controllers
                 TempData["ErrorMessage"] = "Ne možete obrisati oglas koji je već završen.";
                 return RedirectToAction("Index");
             }
+
             _context.Oglasi.Remove(oglas);
             await _context.SaveChangesAsync();
+
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin obrisao oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
+
             TempData["SuccessMessage"] = "Oglas je uspješno obrisan.";
             return RedirectToAction("Index");
         }
-
     }
 }

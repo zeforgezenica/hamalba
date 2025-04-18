@@ -7,6 +7,9 @@ using hamalba.Models;
 using System;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.IO;
+
 namespace hamalba.Controllers
 {
     public class OglasiController : Controller
@@ -27,7 +30,7 @@ namespace hamalba.Controllers
         {
             return View(new OglasViewModel());
         }
-        //Prikaz svih oglasa koji su objavljeni
+
         [HttpGet]
         public async Task<IActionResult> SviOglasi()
         {
@@ -36,10 +39,10 @@ namespace hamalba.Controllers
             try
             {
                 var oglasi = await _context.Oglasi
-                    .Include(o => o.User) 
+                    .Include(o => o.User)
                     .ToListAsync();
 
-                return View(oglasi); 
+                return View(oglasi);
             }
             catch (Exception ex)
             {
@@ -47,8 +50,6 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
-
-        //Kontroler za prijavu na neki oglas
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -60,7 +61,6 @@ namespace hamalba.Controllers
                 return Challenge();
             }
 
-            // Provjera da korisnik već nije prijavljen
             bool vecPrijavljen = await _context.KorisnikOglasi
                 .AnyAsync(p => p.UserId == user.Id && p.OglasId == oglasId);
 
@@ -79,10 +79,19 @@ namespace hamalba.Controllers
             _context.KorisnikOglasi.Add(prijava);
             await _context.SaveChangesAsync();
 
+            var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
+            if (oglas != null)
+            {
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Prijavio se na oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+            }
+
             TempData["Message"] = "Uspješno ste se prijavili na oglas!";
             return RedirectToAction("SviOglasi");
         }
-        //Single View oglasa
+
         [HttpGet]
         public async Task<IActionResult> Detalji(int id)
         {
@@ -105,7 +114,7 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
-        //Pregled prijavljenih kandidata
+
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
         {
@@ -129,7 +138,6 @@ namespace hamalba.Controllers
             return View(prijave);
         }
 
-        //Prihvatanje kandidata za posao
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> PrihvatiKandidata(int oglasId, string kandidatId)
@@ -153,11 +161,15 @@ namespace hamalba.Controllers
             prijava.Status = 1;
             await _context.SaveChangesAsync();
 
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Prihvatio kandidata: {kandidatId} | Oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             TempData["Message"] = "Kandidat je prihvaćen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
-        
-        //Odbijanje kandidata za posao
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OdbijKandidata(int oglasId, string kandidatId)
@@ -181,16 +193,14 @@ namespace hamalba.Controllers
             prijava.Status = 0;
             await _context.SaveChangesAsync();
 
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Odbijen kandidat: {kandidatId} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             TempData["Message"] = "Kandidat je odbijen.";
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
-
-
-
-
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -230,7 +240,13 @@ namespace hamalba.Controllers
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
                 _logger.LogInformation("Oglas created successfully. ID: {OglasId}", oglas.OglasId);
+
                 return RedirectToAction("Index", "Home");
             }
             catch (DbUpdateException ex)
