@@ -61,9 +61,22 @@ namespace hamalba.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Uklanjamo staru lozinku i postavljamo novu
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            // Provjeri da li korisnik već ima lozinku
+            var hasPassword = await _userManager.HasPasswordAsync(user);
+
+            IdentityResult result;
+
+            if (hasPassword)
+            {
+                // Generiši token i resetuj
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+            }
+            else
+            {
+                // Ako korisnik nikad nije imao lozinku (eksterna registracija npr.), dodaj je
+                result = await _userManager.AddPasswordAsync(user, newPassword);
+            }
 
             if (result.Succeeded)
             {
