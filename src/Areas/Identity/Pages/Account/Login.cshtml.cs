@@ -126,7 +126,8 @@ namespace hamalba.Areas.Identity.Pages.Account
 
                     if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
                     {
-                        ModelState.AddModelError(string.Empty, $"Vaš nalog je banovan do {user.BanTrajanje.Value:yyyy-MM-dd}.");
+                        ModelState.AddModelError(string.Empty,
+                            $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
                         return Page();
                     }
                 }

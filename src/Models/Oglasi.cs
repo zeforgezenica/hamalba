@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-public enum OglasStatus { Aktivan, Zavrsen, Otkazan }
+public enum OglasStatus { Aktivan, Zavrsen, Otkazan, CekaNaObjavu }
 
 namespace hamalba.Models
 {
@@ -30,6 +30,9 @@ namespace hamalba.Models
         public DateTime Rok { get; set; }
 
         [Required]
+        public DateTime DatumObjave { get; set; }
+
+        [Required]
         [StringLength(255)]
         public string Kontakt { get; set; }
 
@@ -42,5 +45,6 @@ namespace hamalba.Models
 
         public string UserId { get; set; }
         public virtual Korisnik User { get; set; }
+        public bool Arhiviran { get; set; } // Dodano polje za arhiviranje
     }
 }

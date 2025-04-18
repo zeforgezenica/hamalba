@@ -1,10 +1,17 @@
 ﻿@model List<hamalba.Models.Oglas>
+@using Microsoft.AspNetCore.Identity
 @{
     var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
 }
 
 <h2>Svi Oglasi</h2>
 
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+        <div class="d-flex justify-content-end">
+            <a class="btn btn-primary ms-2" href="/Oglasi/CreateOglas">Kreiraj oglas</a>
+        </div>
+}
 <table class="table">
     <thead>
         <tr>
