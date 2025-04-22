@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Pregled logova aktivnosti";
+}
+
+<h2>Pregled aktivnosti</h2>
+
+<form method="get" asp-action="Index" asp-controller="AdminLogs" class="mb-3">
+    <label for="date">Odaberi datum loga:</label>
+    <input type="date" name="date" id="date" value="@ViewBag.Date" class="form-control" />
+    <button type="submit" class="btn btn-primary mt-2">Prikaži log</button>
+</form>
+
+<hr />
+
+<h4>Log fajl za datum: @ViewBag.Date</h4>
+
+@if (ViewBag.Log != null)
+{
+    <pre style="white-space: pre-wrap; background-color: #f8f9fa; padding: 1rem; border-radius: 6px;">
+        @ViewBag.Log
+        </pre>
+}
+else
+{
+    <p class="text-danger">Nema dostupnog log fajla za taj datum.</p>
+}

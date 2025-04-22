@@ -1,5 +1,6 @@
 ﻿@model List<hamalba.Models.Oglas>
 @using Microsoft.AspNetCore.Identity
+@using System.Net
 @{
     var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
 }
@@ -24,6 +25,10 @@
         </tr>
     </thead>
     <tbody>
+
+        @{
+            var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        }
         @foreach (var oglas in Model)
         {
             <tr>
@@ -33,21 +38,30 @@
                 <td>@oglas.Lokacija</td>
                 <td>@oglas.Status.ToString()</td>
                 <td>
-                    @if (oglas.Status == OglasStatus.Aktivan)
+                    @if (oglas.UserId == currentUserId)
                     {
-                        <form asp-action="PrijaviSe" method="post">
-                            <input type="hidden" name="oglasId" value="@oglas.OglasId" />
-                            <button type="submit" class="btn btn-primary">Prijavi se</button>
-                        </form>
+                        <span class="text-muted">Vaš oglas</span>
                     }
-                    else if (oglas.Status == OglasStatus.InProces)
+                    else if (prijavljeniOglasi.Contains(oglas.OglasId))
                     {
-                        <span class="text-info">Posao je u procesu</span>
+                        <span class="text-success">Već ste prijavljeni</span>
                     }
-                    else if (oglas.Status == OglasStatus.Obavljen)
+                    else
                     {
-                        <span class="text-success">Posao je obavljen</span>
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <a href="/Identity/Account/Login?ReturnUrl=@WebUtility.UrlEncode(Context.Request.Path)" class="btn btn-primary">Prijavi se</a>
+
+                        }
+                        else
+                        {
+                            <form asp-action="PrijaviSe" method="post" style="display:inline;">
+                                <input type="hidden" name="oglasId" value="@oglas.OglasId" />
+                                <button type="submit" class="btn btn-primary">Prijavi se</button>
+                            </form>
+                        }
                     }
+
                     <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary ml-2">Pregled</a>
                 </td>
             </tr>

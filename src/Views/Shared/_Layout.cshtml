@@ -62,12 +62,18 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Kontakt" asp-action="Kontakt">Kontakt</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Analitika" asp-action="Index">Analitika</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Views" asp-controller="Oglasi" asp-action="SviOglasi">Oglasi</a>
                         </li>
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Admin" asp-controller="Admin" asp-action="Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="/logs">Aktivnosti</a>
                             </li>
                         }
 
@@ -86,9 +92,13 @@
                                 @{
                                     if (User.Identity?.IsAuthenticated ?? false)
                                     {
-                                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                                    <li class="nav-item">
+                                        <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" class="d-inline">
                                             <button type="submit" class="btn btn-primary ms-2">Odjava</button>
                                         </form>
+                                    </li>
+
+
                                     }
                                     else
                                     {
@@ -161,5 +171,6 @@
             }
         });
     </script>
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>
