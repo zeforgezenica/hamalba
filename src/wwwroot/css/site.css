@@ -454,3 +454,82 @@ footer {
         margin-top: 2rem;
     }
 }
+.svi-oglasi-wrapper {
+    position: relative;
+    min-height: 100vh;
+    overflow: hidden;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    z-index: 0;
+}
+.svi-oglasi-naslov {
+    background: rgba(255, 255, 255, 0.8);
+    color: black;
+    padding: 8px 32px 8px 32px;
+    margin: 0 auto 2rem;
+    margin-top: 20px;
+    border-radius: 20px;
+    border-bottom: 4px solid #F67E7D;
+    text-align: center;
+    max-width: 300px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    font-size: 2rem;
+    font-weight: bold;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+    .svi-oglasi-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/images/heroBg.png') no-repeat center center / cover;
+        filter: blur(4px);
+        z-index: -2;
+    }
+
+    .svi-oglasi-wrapper::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.1);
+        z-index: -1;
+    }
+
+.oglas-card {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 1.5rem;
+}
+
+    .oglas-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .oglas-card .card-title {
+        font-weight: bold;
+        color: #DB6A69;
+    }
+
+    .oglas-card .card-text {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .oglas-card .btn-sm {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }
