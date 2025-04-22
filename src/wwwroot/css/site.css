@@ -1,4 +1,4 @@
-html {
+﻿html {
     font-size: 10px;
 }
 
@@ -454,15 +454,7 @@ footer {
         margin-top: 2rem;
     }
 }
-.svi-oglasi-wrapper {
-    position: relative;
-    min-height: 100vh;
-    overflow: hidden;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    z-index: 0;
-}
+
 .svi-oglasi-naslov {
     background: rgba(255, 255, 255, 0.8);
     color: black;
@@ -479,28 +471,37 @@ footer {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 }
+.svi-oglasi-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-attachment: fixed;
+    padding: 16px 10px 16px 10px;
+}
+
     .svi-oglasi-wrapper::before {
         content: "";
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background: url('/images/heroBg.png') no-repeat center center / cover;
-        filter: blur(4px);
+        width: 100vw;
+        height: 100vh;
+        background: url('/images/oglasiBg.png') no-repeat center center / cover;
+        filter: blur(8px);
         z-index: -2;
     }
 
     .svi-oglasi-wrapper::after {
         content: "";
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.1);
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.07);
         z-index: -1;
     }
+
+
 
 .oglas-card {
     background: rgba(255, 255, 255, 0.6);
