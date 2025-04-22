@@ -165,6 +165,12 @@ namespace hamalba.Controllers
 
             TempData["ToastMessage"] = "Uspješno ste se prijavili na oglas!";
             TempData["ToastType"] = "success";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Prijavio se na oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             return RedirectToAction("SviOglasi");
         }
 
@@ -241,6 +247,12 @@ namespace hamalba.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Message"] = "Kandidat je prihvaćen.";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Prihvatio kandidata: {kandidatId} | Oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
 
@@ -269,6 +281,12 @@ namespace hamalba.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Message"] = "Kandidat je odbijen.";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Odbijen kandidat: {kandidatId} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
         //Ponistavanje odluke za odabir kandidata/undo dugme
@@ -343,6 +361,8 @@ namespace hamalba.Controllers
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
+                
+
                 _logger.LogInformation("Oglas created successfully. ID: {OglasId}, Status: {Status}", oglas.OglasId, oglas.Status);
 
                 if (oglas.Status == OglasStatus.CekaNaObjavu)
@@ -353,6 +373,11 @@ namespace hamalba.Controllers
                 {
                     TempData["Message"] = "Oglas uspješno kreiran i objavljen!";
                 }
+
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
 
                 return RedirectToAction("SviOglasi", "Oglasi");
             }

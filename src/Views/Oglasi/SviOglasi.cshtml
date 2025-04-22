@@ -1,5 +1,6 @@
 ﻿@model List<hamalba.Models.Oglas>
 @using Microsoft.AspNetCore.Identity
+@using System.Net
 @{
     var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
     var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
