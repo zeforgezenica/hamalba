@@ -43,13 +43,14 @@ namespace hamalba.Controllers
 
                 var oglasi = await _context.Oglasi
                  .Include(o => o.User)
-                 .Where(o => o.Status == OglasStatus.Aktivan || o.Status == OglasStatus.InProces || o.Status==OglasStatus.Obavljen)
+                 .Where(o => o.Status == OglasStatus.Aktivan || o.Status == OglasStatus.InProces || o.Status == OglasStatus.Obavljen)
                  .ToListAsync();
 
 
                 var user = await _userManager.GetUserAsync(User);
 
                 var prijavljeniOglasi = new List<int>();
+                var prihvaceniOglasiZaRecenziju = new Dictionary<int, bool>();
 
                 if (user != null)
                 {
@@ -57,9 +58,33 @@ namespace hamalba.Controllers
                         .Where(p => p.UserId == user.Id)
                         .Select(p => p.OglasId)
                         .ToListAsync();
+
+                    // Pronađi oglase gde je trenutni korisnik prihvaćeni radnik i gdje je oglas obavljen
+                    var prihvaceniOglasi = await _context.KorisnikOglasi
+                        .Where(p => p.UserId == user.Id && p.Status == 1)
+                        .Select(p => p.OglasId)
+                        .ToListAsync();
+
+                    // Dohvati sve oglase koji su obavljeni
+                    var obavljeniOglasi = oglasi
+                        .Where(o => o.Status == OglasStatus.Obavljen && prihvaceniOglasi.Contains(o.OglasId))
+                        .ToList();
+
+                    // Za svaki obavljeni oglas provjeri je li već data recenzija
+                    foreach (var oglas in obavljeniOglasi)
+                    {
+                        var daRecenzija = await _context.Recenzije
+                            .AnyAsync(r => r.OglasId == oglas.OglasId &&
+                                           r.AutorId == user.Id &&
+                                           r.PrimaocId == oglas.UserId &&
+                                           r.Tip == RecenzijaTip.ZaPoslodavca);
+
+                        prihvaceniOglasiZaRecenziju.Add(oglas.OglasId, daRecenzija);
+                    }
                 }
 
                 ViewBag.PrijavljeniOglasi = prijavljeniOglasi;
+                ViewBag.PrihvaceniOglasiZaRecenziju = prihvaceniOglasiZaRecenziju;
 
                 return View(oglasi);
             }
@@ -69,7 +94,6 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
-
         //Filtracija
         [HttpGet]
         public IActionResult Index()
@@ -189,6 +213,27 @@ namespace hamalba.Controllers
                 {
                     return NotFound();
                 }
+
+                var currentUser = await _userManager.GetUserAsync(User);
+                var prihvaceniRadnik = await _context.KorisnikOglasi
+                    .Include(ko => ko.User)
+                    .FirstOrDefaultAsync(ko => ko.OglasId == id && ko.Status == 1);
+
+                ViewBag.PrihvaceniRadnik = prihvaceniRadnik;
+
+                // Check if employer has already left a review for the worker
+                bool poslodavacDaoRecenziju = false;
+                if (currentUser != null && prihvaceniRadnik != null &&
+                    oglas.Status == OglasStatus.Obavljen && oglas.UserId == currentUser.Id)
+                {
+                    poslodavacDaoRecenziju = await _context.Recenzije
+                        .AnyAsync(r => r.OglasId == id &&
+                                  r.AutorId == currentUser.Id &&
+                                  r.PrimaocId == prihvaceniRadnik.UserId &&
+                                  r.Tip == RecenzijaTip.ZaRadnika);
+                }
+
+                ViewBag.PoslodavacDaoRecenziju = poslodavacDaoRecenziju;
 
                 return View(oglas);
             }
@@ -405,40 +450,47 @@ namespace hamalba.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> OznaciKaoObavljen(int oglasId)
         {
-            var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
-            var currentUser = await _userManager.GetUserAsync(User);
-
-            if (oglas == null || currentUser == null || oglas.UserId != currentUser.Id)
+            try
             {
-                return Forbid();
-            }
+                var oglas = await _context.Oglasi.FirstOrDefaultAsync(o => o.OglasId == oglasId);
+                var currentUser = await _userManager.GetUserAsync(User);
 
-            if (oglas.Status != OglasStatus.InProces)
-            {
-                TempData["Error"] = "Samo poslovi koji su u procesu mogu biti označeni kao obavljeni.";
+                if (oglas == null || currentUser == null || oglas.UserId != currentUser.Id)
+                {
+                    return Forbid();
+                }
+
+                if (oglas.Status != OglasStatus.InProces)
+                {
+                    TempData["Error"] = "Samo poslovi koji su u procesu mogu biti označeni kao obavljeni.";
+                    return RedirectToAction("Detalji", new { id = oglasId });
+                }
+
+                // Pronađi prihvaćenog radnika za ovaj oglas
+                var prihvaceniRadnik = await _context.KorisnikOglasi
+                    .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.Status == 1);
+
+                if (prihvaceniRadnik == null)
+                {
+                    TempData["Error"] = "Nije pronađen prihvaćeni radnik za ovaj oglas.";
+                    return RedirectToAction("Detalji", new { id = oglasId });
+                }
+
+                // Promijeni status oglasa na "Obavljen"
+                oglas.Status = OglasStatus.Obavljen;
+                await _context.SaveChangesAsync();
+
+                TempData["Message"] = "Posao je uspješno označen kao obavljen.";
+
+                // Preusmjeri poslodavca na stranicu za davanje recenzije radniku
                 return RedirectToAction("Detalji", new { id = oglasId });
             }
-
-            oglas.Status = OglasStatus.Obavljen;
-            await _context.SaveChangesAsync();
-
-            // Pronađimo prihvaćenog radnika za ovaj oglas
-            var prihvaceniRadnik = await _context.KorisnikOglasi
-                .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.Status == 1);
-
-            if (prihvaceniRadnik != null)
+            catch (Exception ex)
             {
-                // Automatski preusmjeri poslodavca na stranicu za davanje recenzije radniku
-                return RedirectToAction("Create", "Recenzije", new
-                {
-                    oglasId = oglasId,
-                    primaocId = prihvaceniRadnik.UserId,
-                    tip = RecenzijaTip.ZaRadnika
-                });
+                _logger.LogError(ex, "Greška prilikom označavanja oglasa kao obavljenog");
+                TempData["Error"] = "Došlo je do greške prilikom označavanja oglasa kao obavljenog.";
+                return RedirectToAction("Detalji", new { id = oglasId });
             }
-
-            TempData["Message"] = "Posao je uspješno označen kao obavljen.";
-            return RedirectToAction("Detalji", new { id = oglasId });
         }
         [HttpGet]
         public async Task<IActionResult> DetaljiWithRecenzije(int id)

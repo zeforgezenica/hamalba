@@ -23,60 +23,89 @@ namespace hamalba.Controllers
             _userManager = userManager;
         }
 
-        // GET: Recenzije/Create
         [HttpGet]
         public async Task<IActionResult> Create(int oglasId, string primaocId, RecenzijaTip tip)
         {
-            // Provjera da li je oglas obavljen
-            var oglas = await _context.Oglasi.FindAsync(oglasId);
-            if (oglas == null || oglas.Status != OglasStatus.Obavljen)
+            try
             {
-                TempData["Error"] = "Recenziju možete dati samo za obavljene poslove.";
+                // Provjera da li je oglas obavljen
+                var oglas = await _context.Oglasi.FindAsync(oglasId);
+                if (oglas == null || oglas.Status != OglasStatus.Obavljen)
+                {
+                    TempData["Error"] = "Recenziju možete dati samo za obavljene poslove.";
+                    return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
+                }
+
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    return Challenge();
+                }
+
+                // Provjera da li je korisnik već dao recenziju
+                var postojecaRecenzija = await _context.Recenzije
+                    .AnyAsync(r => r.OglasId == oglasId && r.AutorId == user.Id && r.PrimaocId == primaocId);
+
+                if (postojecaRecenzija)
+                {
+                    TempData["Error"] = "Već ste dali recenziju za ovaj posao.";
+                    return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
+                }
+
+                // Provjera prava za davanje recenzije
+                var prijava = await _context.KorisnikOglasi
+                    .FirstOrDefaultAsync(ko => ko.OglasId == oglasId &&
+                                        (ko.UserId == user.Id || oglas.UserId == user.Id) &&
+                                        ko.Status == 1);
+
+                if (tip == RecenzijaTip.ZaPoslodavca)
+                {
+                    // Za recenziju poslodavca, radnik mora biti prihvaćeni kandidat
+                    if (prijava == null || oglas.UserId != primaocId)
+                    {
+                        TempData["Error"] = "Nemate pravo dati recenziju.";
+                        return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
+                    }
+                }
+                else if (tip == RecenzijaTip.ZaRadnika)
+                {
+                    // Za recenziju radnika, autor mora biti poslodavac
+                    if (oglas.UserId != user.Id)
+                    {
+                        TempData["Error"] = "Nemate pravo dati recenziju.";
+                        return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
+                    }
+
+                    // Provjeri da li postoji prihvaćeni radnik
+                    var prihvaceniRadnik = await _context.KorisnikOglasi
+                        .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.Status == 1 && ko.UserId == primaocId);
+
+                    if (prihvaceniRadnik == null)
+                    {
+                        TempData["Error"] = "Ne postoji prihvaćeni radnik za ovaj oglas.";
+                        return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
+                    }
+                }
+
+                var primaoc = await _userManager.FindByIdAsync(primaocId);
+                ViewBag.PrimaocIme = $"{primaoc.Ime} {primaoc.Prezime}";
+                ViewBag.OglasNaslov = oglas.Naslov;
+
+                var model = new RecenzijaViewModel
+                {
+                    OglasId = oglasId,
+                    PrimaocId = primaocId,
+                    Tip = tip
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Greška pri kreiranju recenzije");
+                TempData["Error"] = "Došlo je do greške prilikom pokušaja stvaranja recenzije.";
                 return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
             }
-
-            // Provjera da li je korisnik već dao recenziju
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return Challenge();
-            }
-
-            var postojecaRecenzija = await _context.Recenzije
-                .AnyAsync(r => r.OglasId == oglasId && r.AutorId == user.Id && r.PrimaocId == primaocId);
-
-            if (postojecaRecenzija)
-            {
-                TempData["Error"] = "Već ste dali recenziju za ovaj posao.";
-                return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
-            }
-
-            // Provjera da li je korisnik poslodavac ili radnik
-            var prijava = await _context.KorisnikOglasi
-                .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.UserId == primaocId && ko.Status == 1);
-
-            var isPoslodavac = oglas.UserId == user.Id;
-            var isRadnik = prijava != null && user.Id == primaocId;
-
-            if ((tip == RecenzijaTip.ZaRadnika && !isPoslodavac) ||
-                (tip == RecenzijaTip.ZaPoslodavca && !isRadnik))
-            {
-                TempData["Error"] = "Nemate pravo dati recenziju.";
-                return RedirectToAction("Detalji", "Oglasi", new { id = oglasId });
-            }
-
-            var primaoc = await _userManager.FindByIdAsync(primaocId);
-            ViewBag.PrimaocIme = $"{primaoc.Ime} {primaoc.Prezime}";
-            ViewBag.OglasNaslov = oglas.Naslov;
-
-            var model = new RecenzijaViewModel
-            {
-                OglasId = oglasId,
-                PrimaocId = primaocId,
-                Tip = tip
-            };
-
-            return View(model);
         }
 
         // POST: Recenzije/Create

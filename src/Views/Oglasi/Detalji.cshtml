@@ -6,6 +6,8 @@
 @{
     var currentUserId = UserManager.GetUserId(User);
     var isOwner = currentUserId == Model.UserId;
+    var prihvaceniRadnik = ViewBag.PrihvaceniRadnik as hamalba.Models.KorisnikOglas;
+    var poslodavacDaoRecenziju = ViewBag.PoslodavacDaoRecenziju as bool? ?? false;
 }
 
 <h2>Detalji oglasa</h2>
@@ -62,5 +64,22 @@
             @Html.AntiForgeryToken()
             <button type="submit" class="btn btn-success">Označi posao kao obavljen</button>
         </form>
+    }
+
+    @if (Model.Status == OglasStatus.Obavljen && prihvaceniRadnik != null)
+    {
+        if (!poslodavacDaoRecenziju)
+        {
+            <a asp-controller="Recenzije"
+               asp-action="Create"
+               asp-route-oglasId="@Model.OglasId"
+               asp-route-primaocId="@prihvaceniRadnik.UserId"
+               asp-route-tip="@RecenzijaTip.ZaRadnika"
+               class="btn btn-primary mt-3">Ocijenite radnika</a>
+        }
+        else
+        {
+            <span class="text-success mt-3 d-block">Već ste ocijenili radnika za ovaj posao.</span>
+        }
     }
 }

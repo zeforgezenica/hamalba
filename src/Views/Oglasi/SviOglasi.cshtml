@@ -3,15 +3,16 @@
 @using System.Net
 @{
     var prijavljeniOglasi = ViewBag.PrijavljeniOglasi as List<int> ?? new List<int>();
+    var prihvaceniOglasiZaRecenziju = ViewBag.PrihvaceniOglasiZaRecenziju as Dictionary<int, bool> ?? new Dictionary<int, bool>();
 }
 
 <h2>Svi Oglasi</h2>
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-        <div class="d-flex justify-content-end">
-            <a class="btn btn-primary ms-2" href="/Oglasi/CreateOglas">Kreiraj oglas</a>
-        </div>
+    <div class="d-flex justify-content-end">
+        <a class="btn btn-primary ms-2" href="/Oglasi/CreateOglas">Kreiraj oglas</a>
+    </div>
 }
 <table class="table">
     <thead>
@@ -45,13 +46,29 @@
                     else if (prijavljeniOglasi.Contains(oglas.OglasId))
                     {
                         <span class="text-success">Već ste prijavljeni</span>
+
+                        @if (oglas.Status == OglasStatus.Obavljen &&
+                       prihvaceniOglasiZaRecenziju.ContainsKey(oglas.OglasId))
+                        {
+                            if (prihvaceniOglasiZaRecenziju[oglas.OglasId] == false)
+                            {
+                                <a asp-controller="Recenzije" asp-action="Create"
+                                   asp-route-oglasId="@oglas.OglasId"
+                                   asp-route-primaocId="@oglas.UserId"
+                                   asp-route-tip="@RecenzijaTip.ZaPoslodavca"
+                                   class="btn btn-success ml-2">Ocijenite poslodavca</a>
+                            }
+                            else
+                            {
+                                <span class="text-muted ml-2">Recenzija data</span>
+                            }
+                        }
                     }
                     else
                     {
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <a href="/Identity/Account/Login?ReturnUrl=@WebUtility.UrlEncode(Context.Request.Path)" class="btn btn-primary">Prijavi se</a>
-
                         }
                         else
                         {
