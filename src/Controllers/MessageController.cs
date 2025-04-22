@@ -112,5 +112,17 @@ namespace hamalba.Controllers
             return Json(rezultat);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetBrojNovihPoruka()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            // Dohvati sve poruke koje je ovaj korisnik primio, ali još nije pročitao (za sad po vremenu)
+            var broj = await _context.Poruke
+                .Where(p => p.PrimalacId == userId && p.VrijemeSlanja > DateTime.UtcNow.AddMinutes(-2)) // ili prema tvojoj logici
+                .CountAsync();
+
+            return Json(broj);
+        }
     }
 }

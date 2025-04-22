@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using hamalba.Models
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -57,6 +59,21 @@
     </style>
 </head>
 <body>
+    @inject SignInManager<Korisnik> SignInManager
+    @inject UserManager<Korisnik> UserManager
+
+    @{
+        var currentUser = SignInManager.IsSignedIn(User) ? await UserManager.GetUserAsync(User) : null;
+        var baniran = currentUser?.BanTrajanje != null && currentUser.BanTrajanje > DateTime.UtcNow;
+    }
+
+    @if (baniran)
+    {
+        <script>
+            alert("Vaš nalog je trenutno suspendovan do @currentUser.BanTrajanje?.ToString("yyyy-MM-dd\") zbog: @currentUser.BanRazlog");
+            window.location.href = '/Identity/Account/Logout';
+        </script>
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
             <div class="container-fluid">
@@ -174,10 +191,12 @@
     </script>
     <!-- DIO ZA DODAVANJE U _Layout.cshtml -->
     <!-- 1. Floating dugme -->
-    <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow" style="width:60px; height:60px; z-index:1050;">
-        <i class="bi bi-chat-left-text-fill"></i>
+    <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow position-relative" style="width:60px; height:60px; z-index:1050;">
+        <i class="bi bi-chat-left-text-fill fs-4"></i>
+        <span id="novaPorukaBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem; padding: 4px 6px;">
+            !
+        </span>
     </button>
-
     <!-- 2. Modal za pretragu korisnika -->
     <div class="modal fade" id="searchChatModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -390,6 +409,23 @@
             $('#chatModal').modal('hide');
             $('#searchChatModal').modal('show');
         }
+              function provjeriNovePoruke() {
+            $.get('/Message/GetBrojNovihPoruka', function (broj) {
+                if (broj > 0) {
+                    $('#novaPorukaBadge').removeClass('d-none');
+                } else {
+                    $('#novaPorukaBadge').addClass('d-none');
+                }
+            });
+        }
+
+
+        setInterval(provjeriNovePoruke, 10000);
+
+
+        $(document).ready(function () {
+            provjeriNovePoruke();
+        });
     </script>
 
 </body>
