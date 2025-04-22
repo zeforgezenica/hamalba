@@ -14,7 +14,7 @@ namespace hamalba.Controllers
         {
             _context = context;
         }
-
+        
         public IActionResult Index()
         {
             // Dohvatiti sve oglase

@@ -92,9 +92,13 @@
                                 @{
                                     if (User.Identity?.IsAuthenticated ?? false)
                                     {
-                                        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+                                    <li class="nav-item">
+                                        <form method="post" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" class="d-inline">
                                             <button type="submit" class="btn btn-primary ms-2">Odjava</button>
                                         </form>
+                                    </li>
+
+
                                     }
                                     else
                                     {
@@ -167,5 +171,6 @@
             }
         });
     </script>
+    <partial name="_ValidationScriptsPartial" />
 </body>
 </html>
