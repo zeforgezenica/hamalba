@@ -106,7 +106,9 @@ namespace hamalba.Controllers
             {
                 Id = p.PosiljalacId == userId ? p.Primalac.Id : p.Posiljalac.Id,
                 Ime = p.PosiljalacId == userId ? p.Primalac.Ime : p.Posiljalac.Ime,
-                Prezime = p.PosiljalacId == userId ? p.Primalac.Prezime : p.Posiljalac.Prezime
+                Prezime = p.PosiljalacId == userId ? p.Primalac.Prezime : p.Posiljalac.Prezime,
+                ImaNovu = p.PrimalacId == userId // ako je primalac trenutno ulogovani user, znači da je posiljalac taj koji mu je nešto poslao
+                && p.VrijemeSlanja > DateTime.UtcNow.AddMinutes(-5) 
             });
 
             return Json(rezultat);

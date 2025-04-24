@@ -319,6 +319,7 @@
         </div>
     </div>
     <script>
+        const trenutniKorisnikId = '@currentUser?.Id';
         let trenutniPrimalacId = null;
 
         $(document).ready(function () {
@@ -333,12 +334,14 @@
 
                 $.get('/Message/PretraziKorisnike', { query }, function (data) {
                     let html = '';
-                    data.forEach(k => {
-                        html += `<div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                            <div>${k.ime} ${k.prezime}</div>
-                            <button class="btn btn-sm btn-outline-primary" onclick="zapocniDopisivanje('${k.id}', '${k.ime} ${k.prezime}')">Zapocni Messaging</button>
-                        </div>`;
-                    });
+                            data.forEach(k => {
+                                     if (k.id !== trenutniKorisnikId) {
+                                             html += `<div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                           <div>${k.ime} ${k.prezime}</div>
+                                          <button class="btn btn-sm btn-outline-primary" onclick="zapocniDopisivanje('${k.id}', '${k.ime} ${k.prezime}')">Zapocni Messaging</button>
+                                             </div>`;
+                    }
+                });
                     $('#searchResults').html(html);
                 });
             });
@@ -347,12 +350,17 @@
         function ucitajRecent() {
             $.get('/Message/GetRecentConversations', function (data) {
                 let html = '<h6>Recent:</h6>';
-                data.forEach(k => {
-                    html += `<div class="d-flex justify-content-between align-items-center border-bottom py-2">
-                        <div>${k.ime} ${k.prezime}</div>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="zapocniDopisivanje('${k.id}', '${k.ime} ${k.prezime}')">Nastavi</button>
-                    </div>`;
-                });
+                        data.forEach(k => {
+            if (k.id !== trenutniKorisnikId) {
+                html += `<div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        ${k.ime} ${k.prezime}
+                        ${k.imaNovu ? '<span class="badge bg-danger ms-2">Nova</span>' : ''}
+                    </div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="zapocniDopisivanje('${k.id}', '${k.ime} ${k.prezime}')">Nastavi</button>
+                </div>`;
+            }
+        });
                 $('#recentConversations').html(html);
             });
         }
