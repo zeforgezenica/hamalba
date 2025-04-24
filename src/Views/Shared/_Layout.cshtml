@@ -415,45 +415,42 @@
 
 
         function posaljiPoruku() {
-            const sadrzaj = $('#chatInput').val();
-            if (!sadrzaj) return;
+               const sadrzaj = $('#chatInput').val();
+               if (!sadrzaj) return;
 
-            $.post('/Message/PosaljiPoruku', { primalacId: trenutniPrimalacId, sadrzaj }, function () {
-                $('#chatInput').val('');
-                ucitajPoruke();
-            });
-        }
-              $('#chatInput').on('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // spriječi novi red
-                posaljiPoruku();
-            }
-        });
-        function zatvoriChat() {
-            $('#chatModal').modal('hide');
-            $('#searchChatModal').modal('show');
-        }
-              function provjeriNovePoruke() {
-            $.get('/Message/GetBrojNovihPoruka', function (broj) {
-                if (broj > 0) {
-                    $('#novaPorukaBadge').removeClass('d-none');
-                } else {
-                    $('#novaPorukaBadge').addClass('d-none');
-                }
-            });
-               function zatvoriChat() {
-            $('#chatModal').modal('hide');
-            $('#searchChatModal').modal('show');
-            clearInterval(window.osvjeziInterval);
-        }
+               $.post('/Message/PosaljiPoruku', { primalacId: trenutniPrimalacId, sadrzaj }, function () {
+                   $('#chatInput').val('');
+                   ucitajPoruke();
+               });
+           }
 
+           $('#chatInput').on('keydown', function (e) {
+               if (e.key === 'Enter' && !e.shiftKey) {
+                   e.preventDefault(); // spriječi novi red
+                   posaljiPoruku();
+               }
+           });
 
-        setInterval(provjeriNovePoruke, 10000);
+           function zatvoriChat() {
+               $('#chatModal').modal('hide');
+               $('#searchChatModal').modal('show');
+               clearInterval(window.osvjeziInterval);
+           }
 
+           function provjeriNovePoruke() {
+               $.get('/Message/GetBrojNovihPoruka', function (broj) {
+                   if (broj > 0) {
+                       $('#novaPorukaBadge').removeClass('d-none');
+                   } else {
+                       $('#novaPorukaBadge').addClass('d-none');
+                   }
+               });
+           }
 
-        $(document).ready(function () {
-            provjeriNovePoruke();
-        });
+           $(document).ready(function () {
+               provjeriNovePoruke();
+               setInterval(provjeriNovePoruke, 10000);
+           });
     </script>
 
     <partial name="_ValidationScriptsPartial" />
