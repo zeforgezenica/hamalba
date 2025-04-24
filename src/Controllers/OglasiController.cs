@@ -188,7 +188,8 @@ namespace hamalba.Controllers
                 {
                     return NotFound();
                 }
-
+                //dodati dio za recenzije
+                
                 return View(oglas);
             }
             catch (Exception ex)
@@ -197,6 +198,7 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
 
         //Pregled prijavljenih kandidata
         [HttpGet]
