@@ -502,7 +502,6 @@ footer {
     }
 
 
-
 .oglas-card {
     background: rgba(255, 255, 255, 0.6);
     border-radius: 20px;
@@ -534,3 +533,138 @@ footer {
         font-size: 0.85rem;
         padding: 4px 10px;
     }
+
+.dropdown-icon {
+    max-width: 50px;
+    color: lightcoral;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    .dropdown-icon:hover {
+        background-color: lightcoral; 
+    }
+
+        .dropdown-icon:hover i {
+            color: white; 
+        }
+
+    .dropdown-icon i {
+        color: lightcoral;
+        margin-right: 2px; 
+    }
+
+    .dropdown-icon .bi-caret-down-fill {
+        font-size: 0.9rem;
+    }
+
+@media (max-width: 768px) {
+    .dropdown-icon {
+        max-width: 40px; 
+        border-radius: 25px;
+    }
+
+        .dropdown-icon i {
+            margin-right:3px;
+        }
+}
+
+.profil-container {
+    max-width: 1800px; 
+    margin: 0 auto;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.profil-card {
+    background: whitesmoke;
+    border-radius: 40px;
+    border-bottom: 4px solid rgba(246, 126, 125, 1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    color: black;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 1.5rem;
+}
+.profil-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.profil-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.profil-accordion {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 300px;
+}
+
+.profil-accordion-item {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background-color: #fff;
+    transition: box-shadow 0.3s ease;
+}
+
+.profil-accordion-header {
+    background-color: #fdfdfd;
+    padding: 1.25rem 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.3rem;
+    border-left: 6px solid #F67E7D;
+    transition: background-color 0.3s;
+}
+
+    .profil-accordion-header span i {
+        color: #F67E7D !important;
+        margin-right: 0.5rem;
+        font-size: 1.5rem;
+    }
+
+    .profil-accordion-header:hover {
+        background-color: #f0f0f0;
+    }
+
+.profil-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 1.5rem;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+}
+
+.profil-accordion-item.active .profil-accordion-content {
+    max-height: 1000px;
+    padding: 1.5rem;
+}
+
+.profil-accordion-header i.bi-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.profil-accordion-item.active .profil-accordion-header i.bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 768px) {
+    .profil-layout {
+        flex-direction: column;
+    }
+
+    .profil-info,
+    .profil-accordion {
+        width: 100%;
+    }
+}
