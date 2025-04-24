@@ -52,10 +52,10 @@
                                         <tr>
                                             <td>@oglas.Naslov</td>
                                             <td>@oglas.Lokacija</td>
-                                            <td>@oglas.Cijena KM</td>
+                                            <td>@oglas.Cijena.ToString("F2") KM</td>
                                             <td>
-                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">
-                                                    @oglas.Status
+                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">                                          
+                                                       @oglas.Status
                                                 </span>
                                             </td>
                                             <td>@oglas.DatumObjave.ToLocalTime().ToString("dd.MM.yyyy")</td>
@@ -108,9 +108,9 @@
                                         <tr>
                                             <td>@korisnikOglas.Oglas.Naslov</td>
                                             <td>@korisnikOglas.Oglas.Lokacija</td>
-                                            <td>@korisnikOglas.Oglas.Cijena KM</td>
+                                            <td>@korisnikOglas.Oglas.Cijena.ToString("F2") KM</td>
                                             <td>
-                                                @if (korisnikOglas.Status == 0)
+                                                @if (korisnikOglas.Status == -1)
                                                 {
                                                     <span class="badge bg-secondary">Na čekanju</span>
                                                 }
