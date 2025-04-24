@@ -381,6 +381,12 @@
             $('#searchChatModal').modal('hide');
             $('#chatModal').modal('show');
             ucitajPoruke();
+         clearInterval(window.osvjeziInterval);
+            window.osvjeziInterval = setInterval(() => {
+                if ($('#chatModal').hasClass('show')) {
+                    ucitajPoruke();
+                }
+            }, 5000);
         }
 
         function ucitajPoruke() {
@@ -435,6 +441,10 @@
                     $('#novaPorukaBadge').addClass('d-none');
                 }
             });
+               function zatvoriChat() {
+            $('#chatModal').modal('hide');
+            $('#searchChatModal').modal('show');
+            clearInterval(window.osvjeziInterval);
         }
 
 
