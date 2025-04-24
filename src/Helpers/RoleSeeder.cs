@@ -10,13 +10,12 @@ namespace hamalba.Helpers
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<Korisnik>>();
 
-            // 1. Ensure "Admin" role exists
             if (!await roleManager.RoleExistsAsync("Admin"))
-            {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
-            }
 
-            // 2. Seed a test admin user (OPTIONAL)
+            if (!await roleManager.RoleExistsAsync("User"))
+                await roleManager.CreateAsync(new IdentityRole("User"));
+
             string adminEmail = "admin@hamalba.com";
             string adminPassword = "Admin123!";
 
@@ -30,13 +29,38 @@ namespace hamalba.Helpers
                     Ime = "Admin",
                     Prezime = "Account",
                     Verifikovan = true,
-                    DatumRegistracije = DateTime.UtcNow
+                    DatumRegistracije = DateTime.UtcNow,
+                    EmailConfirmed = true
                 };
 
                 var result = await userManager.CreateAsync(user, adminPassword);
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "Admin");
+                }
+            }
+
+            string testEmail = "user@hamalba.com";
+            string testPassword = "User123!";
+
+            var testUser = await userManager.FindByEmailAsync(testEmail);
+            if (testUser == null)
+            {
+                var user = new Korisnik
+                {
+                    UserName = testEmail,
+                    Email = testEmail,
+                    Ime = "Test",
+                    Prezime = "User",
+                    Verifikovan = true,
+                    DatumRegistracije = DateTime.UtcNow,
+                    EmailConfirmed = true
+                };
+
+                var result = await userManager.CreateAsync(user, testPassword);
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(user, "User");
                 }
             }
         }
