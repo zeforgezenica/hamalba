@@ -1,4 +1,4 @@
-html {
+﻿html {
     font-size: 10px;
 }
 
@@ -454,3 +454,83 @@ footer {
         margin-top: 2rem;
     }
 }
+
+.svi-oglasi-naslov {
+    background: rgba(255, 255, 255, 0.8);
+    color: black;
+    padding: 8px 32px 8px 32px;
+    margin: 0 auto 2rem;
+    margin-top: 20px;
+    border-radius: 20px;
+    border-bottom: 4px solid #F67E7D;
+    text-align: center;
+    max-width: 300px;
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.2);
+    font-size: 2rem;
+    font-weight: bold;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.svi-oglasi-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-attachment: fixed;
+    padding: 16px 10px 16px 10px;
+}
+
+    .svi-oglasi-wrapper::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: url('/images/oglasiBg.png') no-repeat center center / cover;
+        filter: blur(8px);
+        z-index: -2;
+    }
+
+    .svi-oglasi-wrapper::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.07);
+        z-index: -1;
+    }
+
+
+
+.oglas-card {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 1.5rem;
+}
+
+    .oglas-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    .oglas-card .card-title {
+        font-weight: bold;
+        color: #DB6A69;
+    }
+
+    .oglas-card .card-text {
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .oglas-card .btn-sm {
+        font-size: 0.85rem;
+        padding: 4px 10px;
+    }

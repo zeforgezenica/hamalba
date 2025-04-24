@@ -198,8 +198,7 @@ namespace hamalba.Controllers
 
             return RedirectToAction("SviOglasi");
         }
-
-        //Single View oglasa
+        // Detalji oglasa  
         [HttpGet]
         public async Task<IActionResult> Detalji(int id)
         {
@@ -234,6 +233,20 @@ namespace hamalba.Controllers
                 }
 
                 ViewBag.PoslodavacDaoRecenziju = poslodavacDaoRecenziju;
+
+                // DODATI OVAJ KOD: Provjera je li trenutni korisnik radnik i je li već dao recenziju poslodavcu
+                bool radnikDaoRecenziju = false;
+                if (currentUser != null && prihvaceniRadnik != null &&
+                    oglas.Status == OglasStatus.Obavljen && currentUser.Id == prihvaceniRadnik.UserId)
+                {
+                    radnikDaoRecenziju = await _context.Recenzije
+                        .AnyAsync(r => r.OglasId == id &&
+                                  r.AutorId == currentUser.Id &&
+                                  r.PrimaocId == oglas.UserId &&
+                                  r.Tip == RecenzijaTip.ZaPoslodavca);
+                }
+
+                ViewBag.RadnikDaoRecenziju = radnikDaoRecenziju;
 
                 return View(oglas);
             }
