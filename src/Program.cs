@@ -27,6 +27,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<ActivityLogFilter>();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+});
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+
 
 
 // Entity Framework + MySQL (Pomelo)
@@ -36,7 +44,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
         new MySqlServerVersion(new Version(9, 0, 0))
     ));
 
-builder.Services.AddTransient<IEmailSender, FakeEmailSender>();
+
 
 var service = new HuggingFaceService();
 var result = await service.AskAI("Hello");
