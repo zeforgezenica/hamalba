@@ -11,6 +11,8 @@ namespace hamalba.Models
         public bool Verifikovan { get; set; } = false;
         public DateTime? BanTrajanje { get; set; }
         public string? BanRazlog { get; set; }
+
+        public int BrojPrekrsaja { get; set; } = 0;
         public int Arhiviran { get; set; } = 0; // 0 - nije arhiviran, 1 - arhiviran
     }
 }

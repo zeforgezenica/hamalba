@@ -67,14 +67,55 @@ namespace hamalba.Controllers
         [HttpPost]
         public async Task<IActionResult> PosaljiPoruku(string primalacId, string sadrzaj)
         {
-            var posiljalacId = _userManager.GetUserId(User);
-
+            var posiljalac = await _userManager.GetUserAsync(User);
             if (string.IsNullOrWhiteSpace(sadrzaj))
                 return BadRequest("Poruka ne može biti prazna.");
 
+            // 100+ zabranjenih riječi
+            var zabranjeneRijeci = new[]
+            {
+        "jebem", "mater", "kurac", "pička", "nigger", "retard", "idiot", "govno", "fuck", "shit", "asshole",
+        "cigan", "debilu", "konju", "majmune", "kreten", "smrade", "glupane", "budalo", "impotentni", "pederu",
+        "glupan", "kravo", "debil", "usranče", "seljačino", "idiote", "jebo", "jebala", "drolja", "kurvo", "šupak",
+        "puši", "sisač", "smeće", "otpad", "propalico", "šugavče", "luzeru", "serem", "seronjo", "pizde", "drkoš",
+        "škrti", "jadniče", "glup", "smrdljivko", "bolesniku", "nakazo", "šizofreničaru", "psihu", "parazitu", "šuga",
+        "četniku", "ustašo", "klošaru", "mamu", "čmar", "smetlaru", "ništa", "džukela", "ćorav", "mutavi", "gluhi",
+        "ćelavi", "ružnoće", "brabonjak", "prljavi", "luđače", "kozojebu", "magarče", "krmku", "divljaku", "izrode",
+        "davežu", "guzice", "čmaru", "pseto", "lezbijo", "transvestitu", "nacisto", "fuj", "zaraženi", "idiotčino",
+        "otrovni", "zarazni", "degeneriku", "pokvarenjače", "toksični", "izrođeni", "šugavi", "truli", "gubitniče",
+        "jalovče", "ružno", "grozno", "zlo", "katastrofa", "užas", "pakao"
+    };
+
+            int brojPrekrsaja = 0;
+
+            foreach (var rijec in zabranjeneRijeci)
+            {
+                var pattern = @"\b" + System.Text.RegularExpressions.Regex.Escape(rijec) + @"\b";
+                if (System.Text.RegularExpressions.Regex.IsMatch(sadrzaj, pattern, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                {
+                    brojPrekrsaja++;
+                    sadrzaj = System.Text.RegularExpressions.Regex.Replace(sadrzaj, pattern, "macmac", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+            }
+
+            // Zabilježi prekršaje i banuj ako treba
+            if (brojPrekrsaja > 0)
+            {
+                posiljalac.BrojPrekrsaja += brojPrekrsaja;
+
+                if (posiljalac.BrojPrekrsaja >= 3)
+                {
+                    posiljalac.BanTrajanje = DateTime.UtcNow.AddDays(1);
+                    posiljalac.BanRazlog = "Automatski ban zbog uvredljivih poruka";
+                }
+
+                _context.Korisnici.Update(posiljalac);
+                await _context.SaveChangesAsync();
+            }
+
             var poruka = new Poruka
             {
-                PosiljalacId = posiljalacId,
+                PosiljalacId = posiljalac.Id,
                 PrimalacId = primalacId,
                 Sadrzaj = sadrzaj
             };
@@ -84,6 +125,8 @@ namespace hamalba.Controllers
 
             return Ok();
         }
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetRecentConversations()
