@@ -141,6 +141,19 @@ namespace hamalba.Controllers
                 return Challenge();
             }
 
+            //Onemogucavanje prijave kreatoru oglasa
+            var oglas = await _context.Oglasi.FindAsync(oglasId);
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            if (oglas.UserId == user.Id)
+            {
+                TempData["Message"] = "Ne možete se prijaviti na oglas koji ste vi objavili.";
+                return RedirectToAction("SviOglasi");
+            }
+
             var prijava = new KorisnikOglas
             {
                 UserId = user.Id,
@@ -152,6 +165,12 @@ namespace hamalba.Controllers
 
             TempData["ToastMessage"] = "Uspješno ste se prijavili na oglas!";
             TempData["ToastType"] = "success";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Prijavio se na oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             return RedirectToAction("SviOglasi");
         }
 
@@ -228,6 +247,12 @@ namespace hamalba.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Message"] = "Kandidat je prihvaćen.";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Prihvatio kandidata: {kandidatId} | Oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
 
@@ -256,6 +281,33 @@ namespace hamalba.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Message"] = "Kandidat je odbijen.";
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {currentUser.Email} | Odbijen kandidat: {kandidatId} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
+            return RedirectToAction("PregledKandidata", new { id = oglasId });
+        }
+        //Ponistavanje odluke za odabir kandidata/undo dugme
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PonistiOdluku(int oglasId, string kandidatId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Challenge();
+
+            var oglas = await _context.Oglasi.FindAsync(oglasId);
+            if (oglas == null || oglas.UserId != user.Id) return Forbid();
+
+            var prijava = await _context.KorisnikOglasi
+                .FirstOrDefaultAsync(ko => ko.OglasId == oglasId && ko.UserId == kandidatId);
+
+            if (prijava == null) return NotFound();
+
+            prijava.Status = -1;
+            await _context.SaveChangesAsync();
+
             return RedirectToAction("PregledKandidata", new { id = oglasId });
         }
 
@@ -309,6 +361,8 @@ namespace hamalba.Controllers
                 _context.Oglasi.Add(oglas);
                 await _context.SaveChangesAsync();
 
+                
+
                 _logger.LogInformation("Oglas created successfully. ID: {OglasId}, Status: {Status}", oglas.OglasId, oglas.Status);
 
                 if (oglas.Status == OglasStatus.CekaNaObjavu)
@@ -319,6 +373,11 @@ namespace hamalba.Controllers
                 {
                     TempData["Message"] = "Oglas uspješno kreiran i objavljen!";
                 }
+
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Objavio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
 
                 return RedirectToAction("SviOglasi", "Oglasi");
             }

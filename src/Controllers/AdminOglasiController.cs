@@ -125,6 +125,11 @@ namespace hamalba.Controllers
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Izmjene su sačuvane.";
 
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin uredio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
+
             return RedirectToAction("Index");
         }
 
@@ -144,6 +149,12 @@ namespace hamalba.Controllers
             _context.Oglasi.Remove(oglas);
             await _context.SaveChangesAsync();
             TempData["SuccessMessage"] = "Oglas je uspješno obrisan.";
+
+            var log = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Admin obrisao oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, log + Environment.NewLine);
+
             return RedirectToAction("Index");
         }
 
