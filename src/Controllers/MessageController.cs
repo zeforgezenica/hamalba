@@ -83,7 +83,23 @@ namespace hamalba.Controllers
         "ćelavi", "ružnoće", "brabonjak", "prljavi", "luđače", "kozojebu", "magarče", "krmku", "divljaku", "izrode",
         "davežu", "guzice", "čmaru", "pseto", "lezbijo", "transvestitu", "nacisto", "fuj", "zaraženi", "idiotčino",
         "otrovni", "zarazni", "degeneriku", "pokvarenjače", "toksični", "izrođeni", "šugavi", "truli", "gubitniče",
-        "jalovče", "ružno", "grozno", "zlo", "katastrofa", "užas", "pakao"
+        "jalovče", "ružno", "grozno", "zlo", "katastrofa", "užas", "pakao","picka", "kurva", "jebiga", "jebacina", "jebacu", "jebes", "jebote", "jebo", "jebač", "jebac", "jebi", "jebena", "jebeni", "jebeno",
+"materina", "pičko", "pička", "pizda", "pizdo", "kurčinu", "kurcem", "kurcinu", "kita", "penis", "kurčina", "kuracina", "kurvin", "kurvice",
+"kurvetina", "kurvicu", "cigane", "ciganka", "balijo", "četniče", "ustašo", "balija", "četnik", "ustaša", "guzica", "guzice", "šupak", "supak",
+"dupe", "dupeglavac", "droljo", "drolja", "kurvice", "zajebi", "zajebo", "zajebem", "zajebala", "zajebani", "zajebancija", "idiote", "glupaco",
+"glupanderu", "glupandere", "moronu", "morončino", "seljačino", "smrade", "šugavče", "smeće", "retardu", "poremećeni", "poremeceni", "degeneriku",
+"mutavi", "ćoravi", "ćelavi", "mrš", "mrs", "mršavi", "mrštila", "mrsko", "mrsava", "fuj", "fujtaj", "gadosti", "gaduro", "kravo", "stoko", "budalo",
+"idiotkinjo", "kretenčino", "retardirano", "psihopato", "psihičaru", "frik", "luđače", "psihopata", "luđaku", "debilu", "govedo", "debilčino",
+"čobane", "konju", "konjino", "konjacino", "rogonjo", "pedercino", "pederčino", "lezbo", "lezbijo", "lezbejko", "transu", "tranjvestitu", "tranzvestit",
+"nacisto", "usranče", "usro", "usran", "usrani", "usranica", "gnoj", "gnojavo", "gnojište", "zarazno", "otrovno", "pokvareno", "pogan", "pokvarenjak",
+"špijuno", "ulizico", "kriminalče", "lopove", "lopovčino", "lažove", "prevarantu", "varaš", "varalico", "krimosu", "narkomanu", "alkoholičaru",
+"smrdljivče", "truležu", "nakazo", "ružnoće", "odvratni", "gnjido", "parazitu", "štakoru", "glodarče", "ćelavko", "ćelavče", "smradu", "šugavi",
+"štrkljavi", "patuljku", "kripl", "nesposobnjakoviću", "nesposobni", "beznadežni", "pijanico", "mamurno", "bledunjavo", "crvljivo", "crkotina",
+"strvina", "nakazni", "mrtvo", "nebitni", "ništa", "ništavilo", "tupane", "tupoglavi", "mutavi", "mutavac", "neandertalče", "divljaku", "seljačino",
+"šugavčino", "krme", "svinjo", "prase", "krava", "jarče", "kozojebu", "magarčino", "konjarino", "životinjo", "pseto", "gad", "đubre", "nečisto",
+"perverznjaku", "bolesniče", "fetishistu", "silikonsko", "plastiko", "sponzorušo", "parazitkinjo", "ljigavče", "slinavče", "gmizavče", "đavo", "demonu",
+"zloća", "zloćko", "prevarantu", "lažljivi", "nemaš pojma", "ne znaš", "smotanče", "smotanko", "neandertalac", "nisi čovjek", "dno dna"
+
     };
 
             int brojPrekrsaja = 0;
