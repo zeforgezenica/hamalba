@@ -4,7 +4,9 @@
     var topGradovi = (Dictionary<string, int>)ViewData["TopGradovi"];
     var topKorisnici = (Dictionary<string, int>)ViewData["TopKorisnici"];
     var monthlyAds = (Dictionary<string, int>)ViewData["MonthlyAds"];
-    var topCijene = (Dictionary<string, decimal>)ViewData["TopCijene"];
+    var topRadniciDict = (Dictionary<string, double>)ViewData["TopRadniciDict"];
+    var topPoslodavciDict = (Dictionary<string, double>)ViewData["TopPoslodavciDict"];
+
 }
 
 <h2 class="total-ads-heading">Ukupan broj oglasa</h2>
@@ -61,7 +63,7 @@
 
     <div class="accordion-item">
         <div class="accordion-header">
-            <span><i class="bi bi-currency-dollar"></i> Top 10 najskupljih oglasa</span>
+            <span><i class="bi bi-star-fill"></i> Top 10 najbolje ocijenjenih radnika</span>
             <i class="bi bi-chevron-down"></i>
         </div>
         <div class="accordion-content">
@@ -69,19 +71,21 @@
                 <thead>
                     <tr>
                         <th class="fw-bold">#</th>
-                        <th class="fw-bold">Naslov</th>
-                        <th class="fw-bold">Cijena (KM)</th>
+                        <th class="fw-bold">Ime i prezime</th>
+                        <th class="fw-bold">Prosječna ocjena</th>
+                        <th class="fw-bold">Broj recenzija</th>
                     </tr>
                 </thead>
                 <tbody>
                     @{
                         int index = 1;
-                        foreach (var ad in topCijene)
+                        foreach (var radnik in topRadniciDict)
                         {
                             <tr>
                                 <td>@index</td>
-                                <td>@ad.Key</td>
-                                <td>@ad.Value</td>
+                                <td>@radnik.Key</td>
+                                <td>@string.Format("{0:0.00}", radnik.Value)</td>
+                                <td>@topRadniciDict[radnik.Key]</td>
                             </tr>
                             index++;
                         }
@@ -90,6 +94,41 @@
             </table>
         </div>
     </div>
+
+    <div class="accordion-item">
+        <div class="accordion-header">
+            <span><i class="bi bi-star-half"></i> Top 10 najbolje ocijenjenih poslodavaca</span>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="accordion-content">
+            <table class="table table-striped" style="margin-top: 0;">
+                <thead>
+                    <tr>
+                        <th class="fw-bold">#</th>
+                        <th class="fw-bold">Ime i prezime</th>
+                        <th class="fw-bold">Prosječna ocjena</th>
+                        <th class="fw-bold">Broj recenzija</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int indexR = 1;
+                        foreach (var poslodavac in topPoslodavciDict)
+                        {
+                            <tr>
+                                <td>@indexR</td>
+                                <td>@poslodavac.Key</td>
+                                <td>@string.Format("{0:0.00}", poslodavac.Value)</td>
+                                <td>@topPoslodavciDict[poslodavac.Key]</td>
+                            </tr>
+                            indexR++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </div>
 
 
