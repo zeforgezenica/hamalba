@@ -1,17 +1,17 @@
 ﻿@page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "Registracija";
 }
 
 <h1>@ViewData["Title"]</h1>
 @{
     if (@Model.DisplayConfirmAccountLink)
     {
-<p>
-    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-    Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
-</p>
+<h5>
+            <b>Molimo vas da proverite svoj email kako biste potvrdili svoju registraciju.</b><br>
+            Ukoliko ne vidite poruku u prijemnom sandučetu, proverite i folder <i><b>"Spam"</b></i> ili <i><b>"Neželjena pošta (spam)"</b></i>, jer se email ponekad može tamo zateći.
+</h5>
     }
     else
     {

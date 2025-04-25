@@ -5,6 +5,23 @@ Cloning and Setting Up the Project
 When you clone the project or download it from our GitHub repository, open it in Visual Studio.
 Also, install the MySQL.Data package within the project.
 
+## **Test User**
+* Username: ```user@hamalba.com```
+* Password: ```User123!```
+
+## **EmailSettings.local.json**
+
+* The project includes an EmailSettings.local.json file. This file is used to configure the SMTP settings for sending emails.
+* Make sure to update the SMTP settings in this file according to your email provider's requirements.
+ ```
+{
+  "EmailSettings": {
+    "Email": "email@mail.com",
+    "AppPassword": "Your App Password"
+  }
+}
+```
+
 ## **Dependencies**
 
 To install all required NuGet packages, run the following commands in the terminal:
