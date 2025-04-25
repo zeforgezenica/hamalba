@@ -534,6 +534,81 @@ footer {
         padding: 4px 10px;
     }
 
+
+
+.custom-btn {
+    background-color: #F67E7D;
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 24px;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .custom-btn:hover {
+        background-color: #e56665;
+        color: white !important;
+    }
+.nazad-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 40px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    margin-bottom: 20px; 
+}
+
+    .nazad-btn .circle-icon {
+        background-color: #F67E7D;
+        color: white;
+        border-radius: 50%;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+    }
+
+        .nazad-btn .circle-icon i {
+            font-size: 1rem;
+        }
+
+    .nazad-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+
+.img-and-btn-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.detalji-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+
+}
+
 .dropdown-icon {
     width:fit-content;
     max-width: 600px;
