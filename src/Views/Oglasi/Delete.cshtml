@@ -1,0 +1,41 @@
+﻿@model hamalba.Models.Oglas
+@{
+    ViewData["Title"] = "Brisanje oglasa";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2>Potvrda brisanja</h2>
+                </div>
+                <div class="card-body">
+                    <h4>Da li ste sigurni da želite obrisati ovaj oglas?</h4>
+
+                    <div class="alert alert-warning mt-3">
+                        <strong>Napomena:</strong> Nakon brisanja oglas će biti arhiviran i neće više biti dostupan na stranici.
+                    </div>
+
+                    <div class="mt-4 p-3 bg-light border rounded">
+                        <h5><strong>@Model.Naslov</strong></h5>
+                        <p><strong>Lokacija:</strong> @Model.Lokacija</p>
+                        <p><strong>Cijena:</strong> @Model.Cijena.ToString("F2") KM</p>
+                        <p><strong>Datum objave:</strong> @Model.DatumObjave.ToLocalTime().ToString("dd.MM.yyyy")</p>
+                        <p><strong>Rok:</strong> @Model.Rok.ToLocalTime().ToString("dd.MM.yyyy")</p>
+                    </div>
+
+                    <form asp-action="Delete" method="post" class="mt-4">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@Model.OglasId" />
+
+                        <div class="d-flex">
+                            <button type="submit" class="btn btn-primary me-2">Obriši oglas</button>
+                            <a asp-controller="Profil" asp-action="Index" class="btn btn-secondary">Odustani</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -396,5 +396,195 @@ namespace hamalba.Controllers
 
             return View(viewModel);
         }
+        // GET: Akcija za prikaz forme za uređivanje
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var oglas = await _context.Oglasi.FindAsync(id);
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            // Provjera da li je trenutni korisnik vlasnik oglasa
+            if (oglas.UserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            // Konverzija Oglas objekta u OglasViewModel
+            var viewModel = new OglasViewModel
+            {
+                Naslov = oglas.Naslov,
+                Opis = oglas.Opis,
+                Rok = oglas.Rok,
+                Kontakt = oglas.Kontakt,
+                Cijena = oglas.Cijena,
+                Lokacija = oglas.Lokacija,
+                DatumObjave = oglas.DatumObjave,
+                Status = oglas.Status
+            };
+
+            ViewBag.OglasId = id;
+            ViewBag.OglasStatus = oglas.Status;
+            ViewBag.TrenutniDatumObjave = oglas.DatumObjave;
+            ViewBag.IsCekaNaObjavu = oglas.Status == OglasStatus.CekaNaObjavu;
+
+            return View(viewModel);
+        }
+
+        // POST: Akcija za spremanje uređenog oglasa
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.OglasId = id;
+                return View(viewModel);
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var oglas = await _context.Oglasi.FindAsync(id);
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            // Provjera da li je korisnik vlasnik oglasa
+            if (oglas.UserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            // Ažuriranje svojstava oglasa
+            oglas.Naslov = viewModel.Naslov;
+            oglas.Opis = viewModel.Opis;
+            oglas.Rok = viewModel.Rok;
+            oglas.Kontakt = viewModel.Kontakt;
+            oglas.Cijena = viewModel.Cijena;
+            oglas.Lokacija = viewModel.Lokacija;
+
+            // Provjera zakazivanja objave
+            if (PublishLater == true)
+            {
+                oglas.DatumObjave = viewModel.DatumObjave;
+                oglas.Status = OglasStatus.CekaNaObjavu;
+            }
+            else if (PublishNow == true && oglas.Status == OglasStatus.CekaNaObjavu)
+            {
+                // Ako je oglas bio zakazan, a sada se objavljuje odmah
+                oglas.DatumObjave = DateTime.Now;
+                oglas.Status = OglasStatus.Aktivan;
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                if (oglas.Status == OglasStatus.CekaNaObjavu)
+                {
+                    TempData["Message"] = $"Oglas ažuriran i bit će objavljen {oglas.DatumObjave.ToString("dd/MM/yyyy HH:mm")}";
+                }
+                else
+                {
+                    TempData["Message"] = "Oglas uspješno ažuriran!";
+                }
+
+                var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Uredio oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+                var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+                Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+                await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
+                return RedirectToAction("Index", "Profil");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Greška prilikom ažuriranja oglasa");
+                ModelState.AddModelError("", "Došlo je do greške prilikom ažuriranja oglasa.");
+                ViewBag.OglasId = id;
+                return View(viewModel);
+            }
+        }
+
+        // GET: Stranica za potvrdu brisanja
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var oglas = await _context.Oglasi
+                .FirstOrDefaultAsync(o => o.OglasId == id);
+
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            // Provjera da li je korisnik vlasnik oglasa
+            if (oglas.UserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            return View(oglas);
+        }
+
+        // POST: Akcija za brisanje
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return Challenge();
+            }
+
+            var oglas = await _context.Oglasi.FindAsync(id);
+            if (oglas == null)
+            {
+                return NotFound();
+            }
+
+            // Provjera da li je korisnik vlasnik oglasa
+            if (oglas.UserId != user.Id)
+            {
+                return Forbid();
+            }
+
+            // Opcija 1: Potpuno brisanje - uklanjanje iz baze podataka
+            //_context.Oglasi.Remove(oglas);
+
+            // Opcija 2: Meko brisanje - samo označavanje kao otkazano ili arhivirano
+            oglas.Status = OglasStatus.Otkazan;
+            oglas.Arhiviran = true;
+
+            await _context.SaveChangesAsync();
+
+            var detaljniLog = $"[DETAIL] [{DateTime.Now:yyyy-MM-dd HH:mm:ss}] IP: {HttpContext.Connection.RemoteIpAddress} | Email: {user.Email} | Izbrisao oglas: \"{oglas.Naslov}\" | Opis: \"{oglas.Opis}\" | Lokacija: \"{oglas.Lokacija}\" | Rok: {oglas.Rok:yyyy-MM-dd} | Cijena: {oglas.Cijena}";
+            var logPath = Path.Combine(Directory.GetCurrentDirectory(), "Logs", $"activity-log-{DateTime.Now:yyyy-MM-dd}.txt");
+            Directory.CreateDirectory(Path.GetDirectoryName(logPath));
+            await System.IO.File.AppendAllTextAsync(logPath, detaljniLog + Environment.NewLine);
+
+            TempData["Message"] = "Oglas uspješno obrisan!";
+            return RedirectToAction("Index", "Profil");
+        }
     }
 }
