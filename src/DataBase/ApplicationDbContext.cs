@@ -16,6 +16,8 @@ namespace hamalba.DataBase
         public DbSet<Korisnik> Korisnici { get; set; }
         public DbSet<Recenzija> Recenzije { get; set; }
 
+         public DbSet<Poruka> Poruke { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

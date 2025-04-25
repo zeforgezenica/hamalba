@@ -257,7 +257,7 @@ namespace hamalba.Controllers
             }
         }
 
-        //Pregled prijavljenih kandidata       
+        //Pregled prijavljenih kandidata
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
         {

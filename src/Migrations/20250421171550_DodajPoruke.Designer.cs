@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using hamalba.DataBase;
 
@@ -11,9 +12,11 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250421171550_DodajPoruke")]
+    partial class DodajPoruke
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -199,9 +202,6 @@ namespace hamalba.Migrations
 
                     b.Property<DateTime?>("BanTrajanje")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<int>("BrojPrekrsaja")
-                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -390,50 +390,6 @@ namespace hamalba.Migrations
                     b.ToTable("Poruke");
                 });
 
-            modelBuilder.Entity("hamalba.Models.Recenzija", b =>
-                {
-                    b.Property<int>("RecenzijaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("RecenzijaId"));
-
-                    b.Property<string>("AutorId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<DateTime>("DatumKreiranja")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Komentar")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("varchar(500)");
-
-                    b.Property<int>("Ocjena")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OglasId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PrimaocId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<int>("Tip")
-                        .HasColumnType("int");
-
-                    b.HasKey("RecenzijaId");
-
-                    b.HasIndex("AutorId");
-
-                    b.HasIndex("OglasId");
-
-                    b.HasIndex("PrimaocId");
-
-                    b.ToTable("Recenzije", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -532,40 +488,6 @@ namespace hamalba.Migrations
                     b.Navigation("Posiljalac");
 
                     b.Navigation("Primalac");
-                });
-
-            modelBuilder.Entity("hamalba.Models.Recenzija", b =>
-                {
-                    b.HasOne("hamalba.Models.Korisnik", "Autor")
-                        .WithMany("DaneRecenzije")
-                        .HasForeignKey("AutorId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("hamalba.Models.Oglas", "Oglas")
-                        .WithMany()
-                        .HasForeignKey("OglasId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("hamalba.Models.Korisnik", "Primaoc")
-                        .WithMany("PrimljeneRecenzije")
-                        .HasForeignKey("PrimaocId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Autor");
-
-                    b.Navigation("Oglas");
-
-                    b.Navigation("Primaoc");
-                });
-
-            modelBuilder.Entity("hamalba.Models.Korisnik", b =>
-                {
-                    b.Navigation("DaneRecenzije");
-
-                    b.Navigation("PrimljeneRecenzije");
                 });
 #pragma warning restore 612, 618
         }
