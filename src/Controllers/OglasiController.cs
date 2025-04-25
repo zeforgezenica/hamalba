@@ -458,7 +458,7 @@ namespace hamalba.Controllers
 
             return View(viewModel);
         }
-        // GET: Akcija za prikaz forme za uređivanje
+        // GET:Akcija za prikaz forme za uređivanje
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -474,13 +474,11 @@ namespace hamalba.Controllers
                 return NotFound();
             }
 
-            // Provjera da li je trenutni korisnik vlasnik oglasa
             if (oglas.UserId != user.Id)
             {
                 return Forbid();
             }
 
-            // Konverzija Oglas objekta u OglasViewModel
             var viewModel = new OglasViewModel
             {
                 Naslov = oglas.Naslov,
@@ -524,13 +522,11 @@ namespace hamalba.Controllers
                 return NotFound();
             }
 
-            // Provjera da li je korisnik vlasnik oglasa
             if (oglas.UserId != user.Id)
             {
                 return Forbid();
             }
 
-            // Ažuriranje svojstava oglasa
             oglas.Naslov = viewModel.Naslov;
             oglas.Opis = viewModel.Opis;
             oglas.Rok = viewModel.Rok;
@@ -538,7 +534,6 @@ namespace hamalba.Controllers
             oglas.Cijena = viewModel.Cijena;
             oglas.Lokacija = viewModel.Lokacija;
 
-            // Provjera zakazivanja objave
             if (PublishLater == true)
             {
                 oglas.DatumObjave = viewModel.DatumObjave;
@@ -546,7 +541,7 @@ namespace hamalba.Controllers
             }
             else if (PublishNow == true && oglas.Status == OglasStatus.CekaNaObjavu)
             {
-                // Ako je oglas bio zakazan, a sada se objavljuje odmah
+
                 oglas.DatumObjave = DateTime.Now;
                 oglas.Status = OglasStatus.Aktivan;
             }
@@ -598,7 +593,7 @@ namespace hamalba.Controllers
                 return NotFound();
             }
 
-            // Provjera da li je korisnik vlasnik oglasa
+            
             if (oglas.UserId != user.Id)
             {
                 return Forbid();
@@ -625,16 +620,13 @@ namespace hamalba.Controllers
                 return NotFound();
             }
 
-            // Provjera da li je korisnik vlasnik oglasa
             if (oglas.UserId != user.Id)
             {
                 return Forbid();
             }
 
-            // Opcija 1: Potpuno brisanje - uklanjanje iz baze podataka
-            //_context.Oglasi.Remove(oglas);
 
-            // Opcija 2: Meko brisanje - samo označavanje kao otkazano ili arhivirano
+            //Meko brisanje
             oglas.Status = OglasStatus.Otkazan;
             oglas.Arhiviran = true;
 
