@@ -8,28 +8,42 @@
 
 @if (!Model.Any())
 {
-        <p>Nema prijava na ovaj oglas.</p>
+    <p>Nema prijava na ovaj oglas.</p>
 }
 else
 {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Ime korisnika</th>
-                    <th>Email</th>
-                    <th>Datum prijave</th>
-                </tr>
-            </thead>
-            <tbody>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Ime korisnika</th>
+                <th>Email</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
             @foreach (var prijava in Model)
             {
-                        <tr>
-                            <td>@prijava.User.Ime @prijava.User.Prezime</td>
-                            <td>@prijava.User.Email</td
-                        </tr>
+                <tr>
+                    <td>@prijava.User.Ime @prijava.User.Prezime</td>
+                    <td>@prijava.User.Email</td>
+                    <td>
+                        @if (prijava.Status == 1)
+                        {
+                            <span class="text-success">Prihvaćen</span>
+                        }
+                        else if (prijava.Status == 0)
+                        {
+                            <span class="text-danger">Odbijen</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Na čekanju</span>
+                        }
+                    </td>
+                </tr>
             }
-            </tbody>
-        </table>
+        </tbody>
+    </table>
 }
 
 <a asp-action="SviOglasi" class="btn btn-primary">Natrag na oglase</a>

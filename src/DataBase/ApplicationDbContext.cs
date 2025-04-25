@@ -13,7 +13,10 @@ namespace hamalba.DataBase
         public DbSet<Oglas> Oglasi { get; set; }
         public DbSet<KorisnikOglas> KorisnikOglasi { get; set; }
         public DbSet<Kontakt> Kontakt { get; set; }
+        public DbSet<Korisnik> Korisnici { get; set; }
+        public DbSet<Recenzija> Recenzije { get; set; }
 
+         public DbSet<Poruka> Poruke { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -35,10 +38,32 @@ namespace hamalba.DataBase
                       .WithMany()
                       .HasForeignKey(e => e.UserId);
             });
+
+            
+            builder.Entity<Recenzija>(entity =>
+            {
+                entity.ToTable("Recenzije");
+                entity.HasKey(e => e.RecenzijaId);
+                entity.Property(e => e.Ocjena).IsRequired();
+                entity.Property(e => e.DatumKreiranja).IsRequired();
+                entity.Property(e => e.Tip).IsRequired();
+                entity.Property(e => e.Komentar).HasMaxLength(500);
+
+                entity.HasOne(r => r.Oglas)
+                      .WithMany()
+                      .HasForeignKey(r => r.OglasId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(r => r.Autor)
+                      .WithMany(k => k.DaneRecenzije)
+                      .HasForeignKey(r => r.AutorId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(r => r.Primaoc)
+                      .WithMany(k => k.PrimljeneRecenzije)
+                      .HasForeignKey(r => r.PrimaocId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
         }
-    
-
-        public DbSet<Korisnik> Korisnici { get; set; } 
     }
-
 }

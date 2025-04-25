@@ -3,6 +3,7 @@
     ViewData["Title"] = "Pregled kandidata";
     var oglasId = ViewBag.OglasId;
     var oglasNaslov = ViewBag.OglasNaslov as string;
+    var oglasStatus = ViewBag.OglasStatus;
     var currentUserId = User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 }
 
@@ -76,7 +77,18 @@ else
         </tbody>
     </table>
 }
-<a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@ViewBag.OglasId" class="btn btn-secondary mt-3">
-    Nazad na oglas
-</a>
 
+<div class="mt-3">
+    <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@ViewBag.OglasId" class="btn btn-secondary">
+        Nazad na oglas
+    </a>
+
+    @if (oglasStatus == OglasStatus.InProces && currentUserId == Model.FirstOrDefault()?.Oglas.UserId)
+    {
+        <form asp-action="OznaciKaoObavljen" method="post" style="display:inline; margin-left: 10px;">
+            <input type="hidden" name="oglasId" value="@oglasId" />
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-success">Označi posao kao obavljen</button>
+        </form>
+    }
+</div>

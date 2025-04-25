@@ -73,6 +73,10 @@ namespace hamalba.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Prezime")]
             public string Prezime { get; set; }
+
+            [Required]
+            [Display(Name = "Username")]
+            public string Username { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -107,13 +111,14 @@ namespace hamalba.Areas.Identity.Pages.Account
 
                 var user = CreateUser();
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
                 user.Ime = Input.Ime;
                 user.Prezime = Input.Prezime;
                 user.Verifikovan = false;
                 user.DatumRegistracije = DateTime.UtcNow;
+                user.UserName = Input.Username;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

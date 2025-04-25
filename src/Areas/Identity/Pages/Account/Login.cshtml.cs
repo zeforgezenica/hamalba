@@ -118,41 +118,42 @@ namespace hamalba.Areas.Identity.Pages.Account
 
                 if (user == null)
                 {
+                    if (user.Arhiviran == 1)
+                    {
+                        ModelState.AddModelError(string.Empty, "Vaš nalog je trajno onemogućen.");
+                        return Page();
+                    }
+
+                    if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
+                    {
+                        ModelState.AddModelError(string.Empty,
+                            $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
+                        return Page();
+                    }
+
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
+                    if (result.RequiresTwoFactor)
+                    {
+                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning("User account locked out.");
+                        return RedirectToPage("./Lockout");
+                    }
+
+                    // Ako sve iznad ne uspe
                     ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
                     return Page();
                 }
 
-                if (user.Arhiviran == 1)
-                {
-                    ModelState.AddModelError(string.Empty, "Vaš nalog je trajno onemogućen.");
-                    return Page();
-                }
-
-                if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
-                {
-                    ModelState.AddModelError(string.Empty,
-                        $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
-                    return Page();
-                }
-
-                var result = await _signInManager.CheckPasswordSignInAsync(user, Input.Password, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, Input.RememberMe);
-                    _logger.LogInformation("Korisnik je uspešno prijavljen.");
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("Nalog korisnika je zaključan.");
-                    return RedirectToPage("./Lockout");
-                }
-
+                // Ako user == null
                 ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
                 return Page();
             }
@@ -163,3 +164,4 @@ namespace hamalba.Areas.Identity.Pages.Account
 
     }
 }
+
