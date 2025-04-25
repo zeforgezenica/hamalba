@@ -458,7 +458,7 @@ namespace hamalba.Controllers
 
             return View(viewModel);
         }
-        // GET:Akcija za prikaz forme za uređivanje
+        // GET: Edit 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -477,6 +477,12 @@ namespace hamalba.Controllers
             if (oglas.UserId != user.Id)
             {
                 return Forbid();
+            }
+
+            if (oglas.Status == OglasStatus.Obavljen || oglas.Status == OglasStatus.InProces)
+            {
+                TempData["Error"] = "Nije moguće uređivati poslove koji su označeni kao obavljeni ili su u procesu izvršavanja.";
+                return RedirectToAction("Detalji", new { id = oglas.OglasId });
             }
 
             var viewModel = new OglasViewModel
@@ -499,7 +505,7 @@ namespace hamalba.Controllers
             return View(viewModel);
         }
 
-        // POST: Akcija za spremanje uređenog oglasa
+        // POST: Edit 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
@@ -527,6 +533,12 @@ namespace hamalba.Controllers
                 return Forbid();
             }
 
+            if (oglas.Status == OglasStatus.Obavljen || oglas.Status == OglasStatus.InProces)
+            {
+                TempData["Error"] = "Nije moguće uređivati poslove koji su označeni kao obavljeni ili su u procesu izvršavanja.";
+                return RedirectToAction("Detalji", new { id = oglas.OglasId });
+            }
+
             oglas.Naslov = viewModel.Naslov;
             oglas.Opis = viewModel.Opis;
             oglas.Rok = viewModel.Rok;
@@ -541,7 +553,6 @@ namespace hamalba.Controllers
             }
             else if (PublishNow == true && oglas.Status == OglasStatus.CekaNaObjavu)
             {
-
                 oglas.DatumObjave = DateTime.Now;
                 oglas.Status = OglasStatus.Aktivan;
             }
@@ -598,7 +609,11 @@ namespace hamalba.Controllers
             {
                 return Forbid();
             }
-
+            if (oglas.Status == OglasStatus.InProces)
+            {
+                TempData["Error"] = "Nije moguće brisati poslove koji su u procesu izvršavanja.";
+                return RedirectToAction("Detalji", new { id = oglas.OglasId });
+            }
             return View(oglas);
         }
 
@@ -624,7 +639,11 @@ namespace hamalba.Controllers
             {
                 return Forbid();
             }
-
+            if (oglas.Status == OglasStatus.InProces)
+            {
+                TempData["Error"] = "Nije moguće brisati poslove koji su u procesu izvršavanja.";
+                return RedirectToAction("Detalji", new { id = oglas.OglasId });
+            }
 
             //Meko brisanje
             oglas.Status = OglasStatus.Otkazan;
