@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using hamalba.Helpers;
 using hamalba.Filters;
 using Serilog;
+using Microsoft.Extensions.Options;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File(
@@ -17,51 +18,47 @@ Log.Logger = new LoggerConfiguration()
     )
     .CreateLogger();
 
-
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton<DatabaseConnection>();
+
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddJsonFile("emailsettings.local.json", optional: true, reloadOnChange: true)
+    .AddUserSecrets<Program>()
+    .AddEnvironmentVariables();
+
 builder.Host.UseSerilog();
 
-// Registruj servise
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<DatabaseConnection>();
 builder.Services.AddSingleton<DatabaseService>();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<ActivityLogFilter>();
+
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
 });
+
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
-
-
-
-// Entity Framework + MySQL (Pomelo)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(9, 0, 0))
     ));
 
-
-
-var service = new HuggingFaceService();
-var result = await service.AskAI("Hello");
-
-
-
-// ONLY THIS (supports roles too)
 builder.Services.AddIdentity<Korisnik, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
 
 builder.Services.AddHostedService<OglasiStatusService>();
 
 var app = builder.Build();
 
-// HTTP pipeline
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -70,12 +67,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
-// Autentifikacija i autorizacija
-app.UseAuthentication(); // MORA biti prije Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
-// Rute
 app.MapStaticAssets();
 
 app.MapControllerRoute(
@@ -83,8 +77,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapRazorPages();
 
-app.MapRazorPages(); // If you're using scaffolded Identity UI (Register/Login)
 
 using (var scope = app.Services.CreateScope())
 {
@@ -93,4 +87,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
