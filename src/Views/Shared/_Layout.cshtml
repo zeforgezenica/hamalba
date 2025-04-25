@@ -201,7 +201,7 @@
     </script>
     <!-- DIO ZA DODAVANJE U _Layout.cshtml -->
     <!-- 1. Floating dugme -->
-    <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow position-relative" style="width:60px; height:60px; z-index:1050;">
+    <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow position-relative" style="background-color:lightcoral; width:60px; height:60px; z-index:1050;">
         <i class="bi bi-chat-left-text-fill fs-4"></i>
         <span id="novaPorukaBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem; padding: 4px 6px;">
             !
@@ -413,23 +413,54 @@
             input.focus();
         }
 
+                let prvoUpozorenjeDano = false;
+        const zabranjeneRijeci = [
+                   "jebem", "mater", "kurac", "pička", "nigger", "retard", "idiot", "govno", "fuck", "shit", "asshole",
+                "cigan", "debilu", "konju", "majmune", "kreten", "smrade", "glupane", "budalo", "impotentni", "pederu",
+                "glupan", "kravo", "debil", "usranče", "seljačino", "idiote", "jebo", "jebala", "drolja", "kurvo", "šupak",
+                "puši", "sisač", "smeće", "otpad", "propalico", "šugavče", "luzeru", "serem", "seronjo", "pizde", "drkoš",
+                "škrti", "jadniče", "glup", "smrdljivko", "bolesniku", "nakazo", "šizofreničaru", "psihu", "parazitu", "šuga",
+                "četniku", "ustašo", "klošaru", "mamu", "čmar", "smetlaru", "ništa", "džukela", "ćorav", "mutavi", "gluhi",
+                "ćelavi", "ružnoće", "brabonjak", "prljavi", "luđače", "kozojebu", "magarče", "krmku", "divljaku", "izrode",
+                "davežu", "guzice", "čmaru", "pseto", "lezbijo", "transvestitu", "nacisto", "fuj", "zaraženi", "idiotčino",
+                "otrovni", "zarazni", "degeneriku", "pokvarenjače", "toksični", "izrođeni", "šugavi", "truli", "gubitniče",
+                "jalovče", "ružno", "grozno", "zlo", "katastrofa", "užas", "pakao","picka", "kurva", "jebiga", "jebacina", "jebacu", "jebes", "jebote", "jebo", "jebač", "jebac", "jebi", "jebena", "jebeni", "jebeno",
+        "materina", "pičko", "pička", "pizda", "pizdo", "kurčinu", "kurcem", "kurcinu", "kita", "penis", "kurčina", "kuracina", "kurvin", "kurvice",
+        "kurvetina", "kurvicu", "cigane", "ciganka", "balijo", "četniče", "ustašo", "balija", "četnik", "ustaša", "guzica", "guzice", "šupak", "supak",
+        "dupe", "dupeglavac", "droljo", "drolja", "kurvice", "zajebi", "zajebo", "zajebem", "zajebala", "zajebani", "zajebancija", "idiote", "glupaco",
+        "glupanderu", "glupandere", "moronu", "morončino", "seljačino", "smrade", "šugavče", "smeće", "retardu", "poremećeni", "poremeceni", "degeneriku",
+        "mutavi", "ćoravi", "ćelavi", "mrš", "mrs", "mršavi", "mrštila", "mrsko", "mrsava", "fuj", "fujtaj", "gadosti", "gaduro", "kravo", "stoko", "budalo",
+        "idiotkinjo", "kretenčino", "retardirano", "psihopato", "psihičaru", "frik", "luđače", "psihopata", "luđaku", "debilu", "govedo", "debilčino",
+        "čobane", "konju", "konjino", "konjacino", "rogonjo", "pedercino", "pederčino", "lezbo", "lezbijo", "lezbejko", "transu", "tranjvestitu", "tranzvestit",
+        "nacisto", "usranče", "usro", "usran", "usrani", "usranica", "gnoj", "gnojavo", "gnojište", "zarazno", "otrovno", "pokvareno", "pogan", "pokvarenjak",
+        "špijuno", "ulizico", "kriminalče", "lopove", "lopovčino", "lažove", "prevarantu", "varaš", "varalico", "krimosu", "narkomanu", "alkoholičaru",
+        "smrdljivče", "truležu", "nakazo", "ružnoće", "odvratni", "gnjido", "parazitu", "štakoru", "glodarče", "ćelavko", "ćelavče", "smradu", "šugavi",
+        "štrkljavi", "patuljku", "kripl", "nesposobnjakoviću", "nesposobni", "beznadežni", "pijanico", "mamurno", "bledunjavo", "crvljivo", "crkotina",
+        "strvina", "nakazni", "mrtvo", "nebitni", "ništa", "ništavilo", "tupane", "tupoglavi", "mutavi", "mutavac", "neandertalče", "divljaku", "seljačino",
+        "šugavčino", "krme", "svinjo", "prase", "krava", "jarče", "kozojebu", "magarčino", "konjarino", "životinjo", "pseto", "gad", "đubre", "nečisto",
+        "perverznjaku", "bolesniče", "fetishistu", "silikonsko", "plastiko", "sponzorušo", "parazitkinjo", "ljigavče", "slinavče", "gmizavče", "đavo", "demonu",
+        "zloća", "zloćko", "prevarantu", "lažljivi", "nemaš pojma", "ne znaš", "smotanče", "smotanko", "neandertalac", "nisi čovjek", "dno dna"
 
-        function posaljiPoruku() {
-               const sadrzaj = $('#chatInput').val();
-               if (!sadrzaj) return;
+        ];
 
-               $.post('/Message/PosaljiPoruku', { primalacId: trenutniPrimalacId, sadrzaj }, function () {
-                   $('#chatInput').val('');
-                   ucitajPoruke();
-               });
-           }
+               function posaljiPoruku() {
+            const sadrzaj = $('#chatInput').val();
+            if (!sadrzaj) return;
 
-           $('#chatInput').on('keydown', function (e) {
-               if (e.key === 'Enter' && !e.shiftKey) {
-                   e.preventDefault(); // spriječi novi red
-                   posaljiPoruku();
-               }
-           });
+            const rijeci = sadrzaj.toLowerCase().split(/\s+/);
+            const sadrziPsovku = rijeci.some(rijec => zabranjeneRijeci.includes(rijec));
+
+            if (sadrziPsovku && !prvoUpozorenjeDano) {
+                alert("Upozorenje: Vaša poruka sadrži neprikladne riječi. Nastavite pažljivo.");
+                prvoUpozorenjeDano = true;
+                return; // PRVI put samo upozorava, ne šalje poruku
+            }
+
+            $.post('/Message/PosaljiPoruku', { primalacId: trenutniPrimalacId, sadrzaj }, function () {
+                $('#chatInput').val('');
+                ucitajPoruke();
+            });
+        }
 
            function zatvoriChat() {
                $('#chatModal').modal('hide');
