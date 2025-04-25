@@ -1,0 +1,175 @@
+﻿@using hamalba.ViewModels
+@model ProfilViewModel
+@{
+    ViewData["Title"] = "Moj profil";
+    var korisnik = Model.Korisnik;
+}
+
+<div class="profil-container mt-5">
+    <div class="profil-layout">
+        <div class="profil-info">
+            <div class="profil-card">
+                <h4 class="mb-3"><i class="bi bi-person-circle me-2"></i>@korisnik.Ime @korisnik.Prezime</h4>
+                <p><strong>Email:</strong> @korisnik.Email</p>
+                <p><strong>Registrovan:</strong> @korisnik.DatumRegistracije.ToLocalTime().ToString("dd.MM.yyyy")</p>
+                <p>
+                    <strong>Status verifikacije:</strong>
+                    <span class="badge @(korisnik.Verifikovan ? "bg-success" : "bg-warning text-dark")">
+                        @(korisnik.Verifikovan ? "Verifikovan" : "Nije verifikovan")
+                    </span>
+                </p>
+                @if (korisnik.BanTrajanje.HasValue)
+                {
+                    <p class="text-danger"><strong>Banovan do:</strong> @korisnik.BanTrajanje.Value.ToLocalTime().ToString("dd.MM.yyyy")</p>
+                    <p class="text-danger"><strong>Razlog:</strong> @korisnik.BanRazlog</p>
+                }
+            </div>
+        </div>
+        <div class="profil-accordion">
+            <div class="profil-accordion-item">
+                <div class="profil-accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="bi bi-megaphone-fill"></i> Moji oglasi</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="profil-accordion-content">
+                    @if (Model.MojiOglasi.Any())
+                    {
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Naslov</th>
+                                        <th>Lokacija</th>
+                                        <th>Cijena</th>
+                                        <th>Status</th>
+                                        <th>Datum objave</th>
+                                        <th>Akcije</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var oglas in Model.MojiOglasi)
+                                    {
+                                        <tr>
+                                            <td>@oglas.Naslov</td>
+                                            <td>@oglas.Lokacija</td>
+                                            <td>@oglas.Cijena.ToString("F2") KM</td>
+                                            <td>
+                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">                                          
+                                                       @oglas.Status
+                                                </span>
+                                            </td>
+                                            <td>@oglas.DatumObjave.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                                            <td>
+                                                <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary btn-sm me-2 mb-1">
+                                                    <i class="bi bi-eye"></i> Pregled
+                                                </a>
+                                                <button class="btn btn-primary btn-sm mb-1" disabled>
+                                                    <i class="bi bi-trash"></i> Obriši
+                                                </button>
+                                                <button class="btn btn-primary btn-sm mb-1" disabled>
+                                                    <i class="bi bi-pencil"></i> Uredi
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mt-4">Još niste kreirali nijedan oglas.</p>
+                    }
+                </div>
+            </div>
+            <div class="profil-accordion-item">
+                <div class="profil-accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="bi bi-star-fill"></i> Prijavljeni oglasi</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="profil-accordion-content">
+                    @if (Model.PrijavljeniOglasi.Any())
+                    {
+                        <div class="table-responsive mt-3">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Naslov</th>
+                                        <th>Lokacija</th>
+                                        <th>Cijena</th>
+                                        <th>Status</th>
+                                        <th>Datum prijave</th>
+                                        <th>Akcije</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var korisnikOglas in Model.PrijavljeniOglasi)
+                                    {
+                                        <tr>
+                                            <td>@korisnikOglas.Oglas.Naslov</td>
+                                            <td>@korisnikOglas.Oglas.Lokacija</td>
+                                            <td>@korisnikOglas.Oglas.Cijena.ToString("F2") KM</td>
+                                            <td>
+                                                @if (korisnikOglas.Status == -1)
+                                                {
+                                                    <span class="badge bg-secondary">Na čekanju</span>
+                                                }
+                                                else if (korisnikOglas.Status == 1)
+                                                {
+                                                    <span class="badge bg-success">Prihvaćen</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Odbijen</span>
+                                                }
+                                            </td>
+                                            <td>@korisnikOglas.Oglas.DatumObjave.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                                            <td>
+                                                <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@korisnikOglas.Oglas.OglasId" class="btn btn-secondary btn-sm me-2 mb-1">
+                                                    <i class="bi bi-eye"></i> Pregled
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mt-4">Nemate prijavljenih oglasa.</p>
+                    }
+                </div>
+            </div>
+
+
+            <div class="profil-accordion-item">
+                <div class="profil-accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="bi bi-star-fill"></i> Recenzije: Poslodavac</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="profil-accordion-content">
+                    <p class="text-muted text-center">Nemate nijednu recenziju.</p>
+                </div>
+            </div>
+            <div class="profil-accordion-item">
+                <div class="profil-accordion-header" onclick="toggleAccordion(this)">
+                    <span><i class="bi bi-star-fill"></i> Recenzije: Radnik</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+                <div class="profil-accordion-content">
+                    <p class="text-muted text-center">Nemate nijednu recenziju.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleAccordion(header) {
+            const item = header.parentElement;
+            item.classList.toggle("active");
+        }
+    </script>
+}
