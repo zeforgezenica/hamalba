@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using hamalba.DataBase;
 
@@ -11,9 +12,11 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250418132241_AddRecenzijeTable")]
+    partial class AddRecenzijeTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,9 +203,6 @@ namespace hamalba.Migrations
                     b.Property<DateTime?>("BanTrajanje")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("BrojPrekrsaja")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -357,39 +357,6 @@ namespace hamalba.Migrations
                     b.ToTable("Oglasi", (string)null);
                 });
 
-            modelBuilder.Entity("hamalba.Models.Poruka", b =>
-                {
-                    b.Property<int>("PorukaId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PorukaId"));
-
-                    b.Property<string>("PosiljalacId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("PrimalacId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Sadrzaj")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
-                    b.Property<DateTime>("VrijemeSlanja")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("PorukaId");
-
-                    b.HasIndex("PosiljalacId");
-
-                    b.HasIndex("PrimalacId");
-
-                    b.ToTable("Poruke");
-                });
-
             modelBuilder.Entity("hamalba.Models.Recenzija", b =>
                 {
                     b.Property<int>("RecenzijaId")
@@ -513,25 +480,6 @@ namespace hamalba.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("hamalba.Models.Poruka", b =>
-                {
-                    b.HasOne("hamalba.Models.Korisnik", "Posiljalac")
-                        .WithMany()
-                        .HasForeignKey("PosiljalacId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("hamalba.Models.Korisnik", "Primalac")
-                        .WithMany()
-                        .HasForeignKey("PrimalacId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Posiljalac");
-
-                    b.Navigation("Primalac");
                 });
 
             modelBuilder.Entity("hamalba.Models.Recenzija", b =>
