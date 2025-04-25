@@ -130,34 +130,39 @@ namespace hamalba.Areas.Identity.Pages.Account
                             $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
                         return Page();
                     }
-                }
 
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("User logged in.");
+                        return LocalRedirect(returnUrl);
+                    }
+                    if (result.RequiresTwoFactor)
+                    {
+                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                    }
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning("User account locked out.");
+                        return RedirectToPage("./Lockout");
+                    }
+
+                    // Ako sve iznad ne uspe
                     ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
                     return Page();
                 }
+
+                // Ako user == null
+                ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
+                return Page();
             }
 
-            
+            // Ako ModelState nije validan
             return Page();
         }
 
+
     }
 }
+
