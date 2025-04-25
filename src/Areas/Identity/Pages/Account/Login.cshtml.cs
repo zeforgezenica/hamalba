@@ -116,7 +116,7 @@ namespace hamalba.Areas.Identity.Pages.Account
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
 
-                if (user != null)
+                if (user == null)
                 {
                     if (user.Arhiviran == 1)
                     {
@@ -158,7 +158,6 @@ namespace hamalba.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            // Ako ModelState nije validan
             return Page();
         }
 
