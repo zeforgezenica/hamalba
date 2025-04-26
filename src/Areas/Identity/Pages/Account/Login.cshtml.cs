@@ -98,7 +98,7 @@ namespace hamalba.Areas.Identity.Pages.Account
 
             returnUrl ??= Url.Content("~/");
 
-            // Clear the existing external cookie to ensure a clean login process
+            
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -118,50 +118,46 @@ namespace hamalba.Areas.Identity.Pages.Account
 
                 if (user == null)
                 {
-                    if (user.Arhiviran == 1)
-                    {
-                        ModelState.AddModelError(string.Empty, "Vaš nalog je trajno onemogućen.");
-                        return Page();
-                    }
-
-                    if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
-                    {
-                        ModelState.AddModelError(string.Empty,
-                            $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
-                        return Page();
-                    }
-
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-
-                    if (result.Succeeded)
-                    {
-                        _logger.LogInformation("User logged in.");
-                        return LocalRedirect(returnUrl);
-                    }
-                    if (result.RequiresTwoFactor)
-                    {
-                        return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                    }
-                    if (result.IsLockedOut)
-                    {
-                        _logger.LogWarning("User account locked out.");
-                        return RedirectToPage("./Lockout");
-                    }
-
-                    // Ako sve iznad ne uspe
-                    ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
+                    ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave."); 
                     return Page();
                 }
 
-                // Ako user == null
+                if (user.Arhiviran == 1)
+                {
+                    ModelState.AddModelError(string.Empty, "Vaš nalog je trajno onemogućen.");
+                    return Page();
+                }
+
+                if (user.BanTrajanje != null && user.BanTrajanje > DateTime.UtcNow)
+                {
+                    ModelState.AddModelError(string.Empty,
+                        $"Vaš nalog je banovan do {user.BanTrajanje?.ToString("yyyy-MM-dd")}. Razlog: {user.BanRazlog ?? "Nije naveden"}.");
+                    return Page();
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation("User logged in.");
+                    return LocalRedirect(returnUrl);
+                }
+                if (result.RequiresTwoFactor)
+                {
+                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                }
+                if (result.IsLockedOut)
+                {
+                    _logger.LogWarning("User account locked out.");
+                    return RedirectToPage("./Lockout");
+                }
+
                 ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
                 return Page();
             }
 
-            return Page();
+            ModelState.AddModelError(string.Empty, "Neispravan pokušaj prijave.");
+                return Page();
+            }   
         }
-
-
     }
-}
-
