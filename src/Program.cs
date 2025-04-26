@@ -39,6 +39,7 @@ builder.Services.AddScoped<ActivityLogFilter>();
 builder.Services.Configure<IdentityOptions>(options =>
 {
     options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = true;
 });
 
 builder.Services.AddTransient<IEmailSender, EmailSender>();
