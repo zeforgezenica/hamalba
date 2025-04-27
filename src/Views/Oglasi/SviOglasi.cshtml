@@ -47,12 +47,21 @@
                                 }
                                 else
                                 {
-                                    <form asp-action="PrijaviSe" method="post" class="d-inline">
-                                        <input type="hidden" name="oglasId" value="@oglas.OglasId" />
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="bi bi-box-arrow-in-right me-1"></i> Prijavi se
-                                        </button>
-                                    </form>
+
+                                    @if (User.Identity != null && !User.Identity.IsAuthenticated)
+                                    {
+                                        <a href="/Identity/Account/Login?ReturnUrl=@WebUtility.UrlEncode(Context.Request.Path)" class="btn btn-primary">Prijavi se</a>
+
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="PrijaviSe" method="post" class="d-inline">
+                                            <input type="hidden" name="oglasId" value="@oglas.OglasId" />
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-box-arrow-in-right me-1"></i> Prijavi se
+                                            </button>
+                                        </form>
+                                    }
                                 }
 
                                 <a asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary btn-sm ms-2">

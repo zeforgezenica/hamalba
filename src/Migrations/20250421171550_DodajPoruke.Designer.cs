@@ -12,8 +12,8 @@ using hamalba.DataBase;
 namespace hamalba.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250417130732_DodajArhiviranKorisniku")]
-    partial class DodajArhiviranKorisniku
+    [Migration("20250421171550_DodajPoruke")]
+    partial class DodajPoruke
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -197,6 +197,9 @@ namespace hamalba.Migrations
                     b.Property<int>("Arhiviran")
                         .HasColumnType("int");
 
+                    b.Property<string>("BanRazlog")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime?>("BanTrajanje")
                         .HasColumnType("datetime(6)");
 
@@ -314,6 +317,9 @@ namespace hamalba.Migrations
                     b.Property<DateTime>("Datum")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<DateTime>("DatumObjave")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("Kontakt")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -349,6 +355,39 @@ namespace hamalba.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Oglasi", (string)null);
+                });
+
+            modelBuilder.Entity("hamalba.Models.Poruka", b =>
+                {
+                    b.Property<int>("PorukaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PorukaId"));
+
+                    b.Property<string>("PosiljalacId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("PrimalacId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Sadrzaj")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTime>("VrijemeSlanja")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("PorukaId");
+
+                    b.HasIndex("PosiljalacId");
+
+                    b.HasIndex("PrimalacId");
+
+                    b.ToTable("Poruke");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -430,6 +469,25 @@ namespace hamalba.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("hamalba.Models.Poruka", b =>
+                {
+                    b.HasOne("hamalba.Models.Korisnik", "Posiljalac")
+                        .WithMany()
+                        .HasForeignKey("PosiljalacId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("hamalba.Models.Korisnik", "Primalac")
+                        .WithMany()
+                        .HasForeignKey("PrimalacId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Posiljalac");
+
+                    b.Navigation("Primalac");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,53 +6,58 @@
 @{
     var currentUserId = UserManager.GetUserId(User);
     var isOwner = currentUserId == Model.UserId;
+
+    string statusClass = Model.Status switch
+    {
+        OglasStatus.Aktivan => "badge bg-success",
+        OglasStatus.CekaNaObjavu => "badge bg-warning text-dark",
+        OglasStatus.Otkazan => "badge bg-danger",
+        OglasStatus.Zavrsen => "badge bg-primary",
+        _ => "badge bg-secondary"
+    };
 }
 
-<h2>Detalji oglasa</h2>
+<div class="detalji-container">
 
-<table class="table">
-    <tr>
-        <th>Naslov</th>
-        <td>@Model.Naslov</td>
-    </tr>
-    <tr>
-        <th>Opis</th>
-        <td>@Model.Opis</td>
-    </tr>
-    <tr>
-        <th>Datum objave</th>
-        <td>@Model.Datum.ToString("dd.MM.yyyy")</td>
-    </tr>
-    <tr>
-        <th>Rok</th>
-        <td>@Model.Rok.ToString("dd.MM.yyyy")</td>
-    </tr>
-    <tr>
-        <th>Cijena</th>
-        <td>@Model.Cijena.ToString("N2")</td>
-    </tr>
-    <tr>
-        <th>Lokacija</th>
-        <td>@Model.Lokacija</td>
-    </tr>
-    <tr>
-        <th>Status</th>
-        <td>@Model.Status.ToString()</td>
-    </tr>
-    <tr>
-        <th>Kontakt</th>
-        <td>@Model.Kontakt</td>
-    </tr>
-    <tr>
-        <th>Objavio</th>
-        <td>@Model.User?.UserName</td>
-    </tr>
-</table>
+    <a asp-action="SviOglasi" class="nazad-btn mb-4">
+        <i class="fa fa-arrow-left"></i> Nazad na oglase
+    </a>
 
-<a asp-action="SviOglasi" class="btn btn-secondary">Nazad na oglase</a>
+    <div class="row align-items-start">
+        <div class="col-md-4 mb-4 mb-md-0">
+            <img src="~/images/hamalbadetalji.png" class="img-fluid rounded shadow default-oglas-image" alt="Default slika oglasa" />
+        </div>
 
-@if (isOwner)
-{
-    <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="btn btn-info mt-3">Pregled kandidata</a>
-}
+        <div class="col-md-8">
+            <h2>@Model.Naslov</h2>
+            <p><strong>Objavio:</strong> @Model.User?.UserName</p>
+            <span class="@statusClass">@Model.Status.ToString()</span>
 
+            <h3 class="mt-3">@Model.Cijena.ToString("N2") KM</h3>
+
+            <p><strong>Datum objave:</strong> @Model.Datum.ToString("dd.MM.yyyy")</p>
+            <p><strong>Rok:</strong> @Model.Rok.ToString("dd.MM.yyyy")</p>
+            <p><strong>Lokacija:</strong> @Model.Lokacija</p>
+            <p><strong>Kontakt:</strong> @Model.Kontakt</p>
+
+            <a asp-action="PrijaviSe" asp-route-id="@Model.OglasId" class="custom-btn mt-3 me-2">
+                Prijavi se
+            </a>
+
+            @if (isOwner)
+            {
+                <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="custom-btn mt-3">
+                    Pregled kandidata
+                </a>
+            }
+
+            <div class="mt-4 p-3 bg-light border rounded">
+                <h5 class="fw-bold">Opis</h5>
+                <p>@Model.Opis</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dodati dio za recenzije -->
+    <h4 class="mt-5">Recenzije poslodavaca</h4>
+</div>

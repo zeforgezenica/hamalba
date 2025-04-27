@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 using hamalba.ViewModels;
-using hamalba.Data;
+
 namespace hamalba.Controllers
 { 
     public class OglasiController : Controller
@@ -39,7 +39,7 @@ namespace hamalba.Controllers
         [HttpGet]
         public IActionResult CreateOglas()
         {
-            return View(new OglasViewModel());
+            return View(new OglasModel());
         }
 
         //Prikaz svih oglasa koji su objavljeni
@@ -199,7 +199,8 @@ namespace hamalba.Controllers
                 {
                     return NotFound();
                 }
-
+                //dodati dio za recenzije
+                
                 return View(oglas);
             }
             catch (Exception ex)
@@ -208,6 +209,7 @@ namespace hamalba.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+
 
         //Pregled prijavljenih kandidata
         [HttpGet]
@@ -324,7 +326,7 @@ namespace hamalba.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
+        public async Task<IActionResult> CreateOglas(hamalba.Models.OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
         {
             _logger.LogInformation("CreateOglas POST started");
 
