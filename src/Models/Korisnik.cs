@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace hamalba.Models
 {
@@ -14,5 +15,29 @@ namespace hamalba.Models
 
         public int BrojPrekrsaja { get; set; } = 0;
         public int Arhiviran { get; set; } = 0; // 0 - nije arhiviran, 1 - arhiviran
+                                                // Nove vrijednosti za ocjene
+        public virtual ICollection<Recenzija> PrimljeneRecenzije { get; set; }
+        public virtual ICollection<Recenzija> DaneRecenzije { get; set; }
+
+        [NotMapped]
+        public decimal ProsjecnaOcjena
+        {
+            get
+            {
+                if (PrimljeneRecenzije == null || PrimljeneRecenzije.Count == 0)
+                    return 0;
+
+                decimal suma = 0;
+                foreach (var recenzija in PrimljeneRecenzije)
+                {
+                    suma += recenzija.Ocjena;
+                }
+
+                return suma / PrimljeneRecenzije.Count;
+            }
+        }
+        [NotMapped]
+        public int BrojRecenzija => PrimljeneRecenzije?.Count ?? 0;
     }
+
 }

@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -174,8 +174,22 @@ namespace hamalba.Areas.Identity.Pages.Account
                             values: new { area = "Identity", userId = userId, code = code },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                            $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        await _emailSender.SendEmailAsync(Input.Email, "Verifikacija računa",
+                           $@"
+                                <div style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>
+                                    <h2 style='color: #2c3e50;'>Dobrodošli na HamalBa!</h2>
+                                    <p>Hvala što ste se registrovali. Molimo vas da potvrdite svoj račun klikom na dugme ispod:</p>
+                                    <p style='text-align: center; margin: 30px 0;'>
+                                        <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                           style='background-color: #4CAF50; color: white; padding: 12px 20px;
+                                                  text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>
+                                            Verifikuj se
+                                        </a>
+                                    </p>
+                                    
+                                </div>
+                            ");
+
 
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)

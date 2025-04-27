@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-public enum OglasStatus { Aktivan, Zavrsen, Otkazan, CekaNaObjavu }
+public enum OglasStatus { Aktivan, Zavrsen, Otkazan, CekaNaObjavu, InProces, Obavljen }
 
 namespace hamalba.Models
 {
