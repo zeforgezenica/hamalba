@@ -54,7 +54,7 @@
                                             <td>@oglas.Lokacija</td>
                                             <td>@oglas.Cijena.ToString("F2") KM</td>
                                             <td>
-                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">                                          
+                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">
                                                     @oglas.Status
                                                 </span>
                                             </td>
@@ -63,18 +63,12 @@
                                                 <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@oglas.OglasId" class="btn btn-secondary btn-sm me-2 mb-1">
                                                     <i class="bi bi-eye"></i> Pregled
                                                 </a>
-                                                @if (oglas.Status != OglasStatus.Obavljen && oglas.Status != OglasStatus.InProces)
-                                                {
-                                                    <a asp-controller="Oglasi" asp-action="Edit" asp-route-id="@oglas.OglasId" class="btn btn-secondary btn-sm mb-1">
-                                                        <i class="bi bi-pencil"></i> Uredi
-                                                    </a>
-                                                }
-                                                @if (oglas.Status != OglasStatus.InProces)
-                                                {
-                                                    <a asp-controller="Oglasi" asp-action="Delete" asp-route-id="@oglas.OglasId" class="btn btn-primary btn-sm mb-1 me-2">
-                                                        <i class="bi bi-trash"></i> Obriši
-                                                    </a>
-                                                }
+                                                <button class="btn btn-primary btn-sm mb-1" disabled>
+                                                    <i class="bi bi-trash"></i> Obriši
+                                                </button>
+                                                <button class="btn btn-primary btn-sm mb-1" disabled>
+                                                    <i class="bi bi-pencil"></i> Uredi
+                                                </button>
                                             </td>
                                         </tr>
                                     }
@@ -151,20 +145,141 @@
 
             <div class="profil-accordion-item">
                 <div class="profil-accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="bi bi-star-fill"></i> Recenzije: Poslodavac</span>
+                    <span><i class="bi bi-star-fill"></i> Recenzije: Poslodavac (@Model.RecenzijePoslodavac.Count)</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="profil-accordion-content">
-                    <p class="text-muted text-center">Nemate nijednu recenziju.</p>
+                    @if (Model.RecenzijePoslodavac.Any())
+                    {
+                        <div class="recenzije-summary mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rating-stars me-3">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(Model.ProsjecnaOcjenaPoslodavac))
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-warning"></i>
+                                        }
+                                    }
+                                </div>
+                                <div>
+                                    <span class="fw-bold">@Model.ProsjecnaOcjenaPoslodavac.ToString("F1")</span>
+                                    <span class="text-muted">(@Model.RecenzijePoslodavac.Count @(Model.RecenzijePoslodavac.Count == 1 ? "recenzija" : "recenzije"))</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recenzije-list">
+                            @foreach (var recenzija in Model.RecenzijePoslodavac)
+                            {
+                                <div class="recenzija-item card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+                                                <h6 class="mb-0">@recenzija.Autor.Ime @recenzija.Autor.Prezime</h6>
+                                                <small class="text-muted">
+                                                    Oglas: <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@recenzija.OglasId">@recenzija.Oglas.Naslov</a>
+                                                </small>
+                                            </div>
+                                            <div class="rating-stars">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= recenzija.Ocjena)
+                                                    {
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-star text-warning"></i>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <p class="recenzija-komentar mb-1">@recenzija.Komentar</p>
+                                        <small class="text-muted">@recenzija.DatumKreiranja.ToLocalTime().ToString("dd.MM.yyyy")</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mt-4">Nemate nijednu recenziju kao poslodavac.</p>
+                    }
                 </div>
             </div>
+
             <div class="profil-accordion-item">
                 <div class="profil-accordion-header" onclick="toggleAccordion(this)">
-                    <span><i class="bi bi-star-fill"></i> Recenzije: Radnik</span>
+                    <span><i class="bi bi-star-fill"></i> Recenzije: Radnik (@Model.RecenzijeRadnik.Count)</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
                 <div class="profil-accordion-content">
-                    <p class="text-muted text-center">Nemate nijednu recenziju.</p>
+                    @if (Model.RecenzijeRadnik.Any())
+                    {
+                        <div class="recenzije-summary mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="rating-stars me-3">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= Math.Round(Model.ProsjecnaOcjenaRadnik))
+                                        {
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-star text-warning"></i>
+                                        }
+                                    }
+                                </div>
+                                <div>
+                                    <span class="fw-bold">@Model.ProsjecnaOcjenaRadnik.ToString("F1")</span>
+                                    <span class="text-muted">(@Model.RecenzijeRadnik.Count @(Model.RecenzijeRadnik.Count == 1 ? "recenzija" : "recenzije"))</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="recenzije-list">
+                            @foreach (var recenzija in Model.RecenzijeRadnik)
+                            {
+                                <div class="recenzija-item card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div>
+                                                <h6 class="mb-0">@recenzija.Autor.Ime @recenzija.Autor.Prezime</h6>
+                                                <small class="text-muted">
+                                                    Oglas: <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@recenzija.OglasId">@recenzija.Oglas.Naslov</a>
+                                                </small>
+                                            </div>
+                                            <div class="rating-stars">
+                                                @for (int i = 1; i <= 5; i++)
+                                                {
+                                                    if (i <= recenzija.Ocjena)
+                                                    {
+                                                        <i class="bi bi-star-fill text-warning"></i>
+                                                    }
+                                                    else
+                                                    {
+                                                        <i class="bi bi-star text-warning"></i>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+                                        <p class="recenzija-komentar mb-1">@recenzija.Komentar</p>
+                                        <small class="text-muted">@recenzija.DatumKreiranja.ToLocalTime().ToString("dd.MM.yyyy")</small>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center mt-4">Nemate nijednu recenziju kao radnik.</p>
+                    }
                 </div>
             </div>
         </div>
