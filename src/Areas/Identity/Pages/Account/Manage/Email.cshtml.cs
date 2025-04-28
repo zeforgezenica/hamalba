@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
@@ -126,8 +126,24 @@ namespace hamalba.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "Verifikacija računa",
+                     $@"
+                                <div style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>
+                                    <h2 style='color: #2c3e50;'>Welcome to Our App!</h2>
+                                    <p>Thanks for signing up. Please confirm your account by clicking the button below:</p>
+                                    <p style='text-align: center; margin: 30px 0;'>
+                                        <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                           style='background-color: #4CAF50; color: white; padding: 12px 20px;
+                                                  text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>
+                                            Confirm Email
+                                        </a>
+                                    </p>
+                                    <p>If the button doesn't work, copy and paste this link into your browser:</p>
+                                    <p style='font-size: 0.9em; color: #555;'>{HtmlEncoder.Default.Encode(callbackUrl)}</p>
+                                    <hr style='margin-top: 40px;'>
+                                    <p style='font-size: 0.8em; color: #999;'>If you didn’t request this, you can safely ignore this email.</p>
+                                </div>
+                            ");
 
                 StatusMessage = "Confirmation link to change email sent. Please check your email.";
                 return RedirectToPage();
@@ -162,8 +178,21 @@ namespace hamalba.Areas.Identity.Pages.Account.Manage
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                "Verifikacija računa",
+                 $@"
+                                <div style='font-family: Arial, sans-serif; color: #333; padding: 20px;'>
+                                    <h2 style='color: #2c3e50;'>Dobrodošli na HamalBa!</h2>
+                                    <p>Hvala što ste se registrovali. Molimo vas da potvrdite svoj račun klikom na dugme ispod:</p>
+                                    <p style='text-align: center; margin: 30px 0;'>
+                                        <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'
+                                           style='background-color: #4CAF50; color: white; padding: 12px 20px;
+                                                  text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold;'>
+                                            Verifikuj se
+                                        </a>
+                                    </p>
+                                    
+                                </div>
+                            ");
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();
