@@ -3,6 +3,20 @@ using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
 using hamalba.Models;
 
+public class TopRadnikDTO
+{
+    public string ImePrezime { get; set; }
+    public double ProsjecnaOcjena { get; set; }
+    public int BrojRecenzija { get; set; }
+}
+
+public class TopPoslodavacDTO
+{
+    public string ImePrezime { get; set; }
+    public double ProsjecnaOcjena { get; set; }
+    public int BrojRecenzija { get; set; }
+}
+
 public class AnalitikaController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -57,66 +71,61 @@ public class AnalitikaController : Controller
             .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
             .ToDictionaryAsync(x => x.Status, x => x.Count);
 
-        // Za tabelu i grafikon
         var topRadniciList = await _context.Recenzije
-            .Where(r => r.Tip == RecenzijaTip.ZaRadnika)
-            .GroupBy(r => r.PrimaocId)
-            .Select(g => new {
-                KorisnikId = g.Key,
-                ProsjecnaOcjena = g.Average(r => r.Ocjena),
-                BrojRecenzija = g.Count()
-            })
-            .Where(x => x.BrojRecenzija >= 3)
-            .OrderByDescending(x => x.ProsjecnaOcjena)
-            .ThenByDescending(x => x.BrojRecenzija)
-            .Take(10)
-            .Join(_context.Users,
-                rec => rec.KorisnikId,
-                user => user.Id,
-                (rec, user) => new {
-                    ImePrezime = user.Ime + " " + user.Prezime,
-                    rec.ProsjecnaOcjena,
-                    rec.BrojRecenzija
-                })
-            .ToListAsync();
-
-        var topRadniciDict = topRadniciList.ToDictionary(x => x.ImePrezime, x => x.ProsjecnaOcjena);
+    .Where(r => r.Tip == RecenzijaTip.ZaRadnika)
+    .GroupBy(r => r.PrimaocId)
+    .Select(g => new
+    {
+        KorisnikId = g.Key,
+        ProsjecnaOcjena = g.Average(r => r.Ocjena),
+        BrojRecenzija = g.Count()
+    })
+    .Where(x => x.BrojRecenzija >= 1)
+    .OrderByDescending(x => x.ProsjecnaOcjena)
+    .ThenByDescending(x => x.BrojRecenzija)
+    .Take(10)
+    .Join(_context.Users,
+        rec => rec.KorisnikId,
+        user => user.Id,
+        (rec, user) => new TopRadnikDTO
+        {
+            ImePrezime = user.Ime + " " + user.Prezime,
+            ProsjecnaOcjena = rec.ProsjecnaOcjena,
+            BrojRecenzija = rec.BrojRecenzija
+        })
+    .ToListAsync();
 
         var topPoslodavciList = await _context.Recenzije
             .Where(r => r.Tip == RecenzijaTip.ZaPoslodavca)
             .GroupBy(r => r.PrimaocId)
-            .Select(g => new {
+            .Select(g => new
+            {
                 KorisnikId = g.Key,
                 ProsjecnaOcjena = g.Average(r => r.Ocjena),
                 BrojRecenzija = g.Count()
             })
-            .Where(x => x.BrojRecenzija >= 3)
+            .Where(x => x.BrojRecenzija >= 1)
             .OrderByDescending(x => x.ProsjecnaOcjena)
             .ThenByDescending(x => x.BrojRecenzija)
             .Take(10)
             .Join(_context.Users,
                 rec => rec.KorisnikId,
                 user => user.Id,
-                (rec, user) => new {
+                (rec, user) => new TopPoslodavacDTO
+                {
                     ImePrezime = user.Ime + " " + user.Prezime,
-                    rec.ProsjecnaOcjena,
-                    rec.BrojRecenzija
+                    ProsjecnaOcjena = rec.ProsjecnaOcjena,
+                    BrojRecenzija = rec.BrojRecenzija
                 })
             .ToListAsync();
-
-        var topPoslodavciDict = topPoslodavciList.ToDictionary(x => x.ImePrezime, x => x.ProsjecnaOcjena);
 
         ViewData["UkupnoOglasa"] = ukupnoOglasa;
         ViewData["TopGradovi"] = gradoviDict;
         ViewData["TopKorisnici"] = korisniciDict;
         ViewData["MonthlyAds"] = monthlyAdsDict;
         ViewData["StatusiOglasa"] = statusi;
-
         ViewData["TopRadnici"] = topRadniciList;
-        ViewData["TopRadniciDict"] = topRadniciDict;
-
         ViewData["TopPoslodavci"] = topPoslodavciList;
-        ViewData["TopPoslodavciDict"] = topPoslodavciDict;
 
         return View();
     }
