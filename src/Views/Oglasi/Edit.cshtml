@@ -1,0 +1,170 @@
+﻿@model hamalba.Models.OglasViewModel
+@{
+    ViewData["Title"] = "Uredi oglas";
+    bool isScheduled = ViewBag.IsCekaNaObjavu ?? false;
+    DateTime currentPublishDate = ViewBag.TrenutniDatumObjave;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Uredi oglas</h2>
+
+            <form asp-action="Edit" asp-route-id="@ViewBag.OglasId" method="post" id="oglasForm">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <!-- Naslov -->
+                <div class="mb-3">
+                    <label asp-for="Naslov" class="form-label"></label>
+                    <input asp-for="Naslov" class="form-control" />
+                    <span asp-validation-for="Naslov" class="text-danger"></span>
+                </div>
+
+                <!-- Opis -->
+                <div class="mb-3">
+                    <label asp-for="Opis" class="form-label"></label>
+                    <textarea asp-for="Opis" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Opis" class="text-danger"></span>
+                </div>
+
+                <!-- Status publikacije -->
+                @if (isScheduled)
+                {
+                        <div class="mb-3 alert alert-info">
+                            <p><strong>Status objave:</strong> Oglas čeka na objavu</p>
+                            <p><strong>Zakazano za:</strong> @currentPublishDate.ToString("dd.MM.yyyy HH:mm")</p>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="schedulePublication" name="SchedulePublication" checked>
+                            <label class="form-check-label" for="schedulePublication">Zakaži objavu za kasnije</label>
+                        </div>
+                }
+                else
+                {
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="schedulePublication" name="SchedulePublication">
+                            <label class="form-check-label" for="schedulePublication">Zakaži objavu za kasnije</label>
+                        </div>
+                }
+
+                <!-- Datum objave (sakriven inicijalno ako nije već zakazan) -->
+                <div class="mb-3" id="publicationDateContainer" style="display: @(isScheduled ? "block" : "none");">
+                    <label asp-for="DatumObjave" class="form-label">Datum i vrijeme objave</label>
+                    <input asp-for="DatumObjave" type="datetime-local" class="form-control" id="datumObjave" />
+                    <span asp-validation-for="DatumObjave" class="text-danger"></span>
+                    <small class="text-muted">Odaberite datum objave (bit će prikazan nakon ovog datuma)</small>
+                </div>
+
+                <!-- Rok trajanja -->
+                <div class="mb-3">
+                    <label asp-for="Rok" class="form-label">Rok trajanja oglasa</label>
+                    <input asp-for="Rok" type="datetime-local" class="form-control" id="rokOglasa" />
+                    <span asp-validation-for="Rok" class="text-danger"></span>
+                </div>
+
+                <!-- Ostala polja -->
+                <div class="mb-3">
+                    <label asp-for="Cijena" class="form-label"></label>
+                    <input asp-for="Cijena" class="form-control" />
+                    <span asp-validation-for="Cijena" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Lokacija" class="form-label"></label>
+                    <input asp-for="Lokacija" class="form-control" />
+                    <span asp-validation-for="Lokacija" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Kontakt" class="form-label"></label>
+                    <input asp-for="Kontakt" class="form-control" />
+                    <span asp-validation-for="Kontakt" class="text-danger"></span>
+                </div>
+
+                <!-- Dugmad -->
+                <div class="btn-group mt-4">
+                    <button type="submit" name="PublishNow" value="true" class="btn btn-success" id="publishNowBtn">
+                        @if (isScheduled)
+                        {
+                                <span>Objavi odmah</span>
+                        }
+                        else
+                        {
+                                <span>Spremi promjene</span>
+                        }
+                    </button>
+                    <button type="submit" name="PublishLater" value="true" class="btn btn-primary" id="publishLaterBtn" style="display: @(isScheduled ? "inline-block" : "none");">Promijeni zakazanu objavu</button>
+                    <a asp-controller="Profil" asp-action="Index" class="btn btn-secondary ms-2">Odustani</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Elementi
+                const scheduleCheckbox = document.getElementById('schedulePublication');
+                const publicationDateContainer = document.getElementById('publicationDateContainer');
+                const publishNowBtn = document.getElementById('publishNowBtn');
+                const publishLaterBtn = document.getElementById('publishLaterBtn');
+                const datumObjaveInput = document.getElementById('datumObjave');
+                const rokInput = document.getElementById('rokOglasa');
+
+                // Postavi defaultne datume ako nisu već postavljeni
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+
+                // Formatiraj za datetime-local input
+                function formatForInput(date) {
+                    return date.toISOString().slice(0, 16);
+                }
+
+                // Inicijalne vrijednosti
+                if (!datumObjaveInput.value) {
+                    datumObjaveInput.value = formatForInput(tomorrow);
+                }
+
+                // Obavezno pravilno formatirati datum roka
+                if (rokInput && rokInput.value) {
+                    const date = new Date(rokInput.value);
+                    if (!isNaN(date.getTime())) {
+                        rokInput.value = date.toISOString().slice(0, 16);
+                    }
+                }
+
+                // Toggle logika
+                scheduleCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        publicationDateContainer.style.display = 'block';
+                        publishNowBtn.textContent = 'Objavi odmah';
+                        publishLaterBtn.style.display = 'inline-block';
+                    } else {
+                        publicationDateContainer.style.display = 'none';
+        @if (isScheduled)
+        {
+            <text>publishNowBtn.textContent = 'Objavi odmah';</text>
+        }
+        else
+        {
+            <text>publishNowBtn.textContent = 'Spremi promjene';</text>
+        }
+                        publishLaterBtn.style.display = 'none';
+                    }
+                });
+
+                // Inicijalna provjera
+                if (scheduleCheckbox.checked) {
+                    publicationDateContainer.style.display = 'block';
+                    publishLaterBtn.style.display = 'inline-block';
+                }
+            });
+        </script>
+}

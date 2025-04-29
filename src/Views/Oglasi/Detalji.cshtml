@@ -46,19 +46,29 @@
             <p><strong>Lokacija:</strong> @Model.Lokacija</p>
             <p><strong>Kontakt:</strong> @Model.Kontakt</p>
 
-            <a asp-action="PrijaviSe" asp-route-id="@Model.OglasId" class="custom-btn mt-3 me-2">
+            <a asp-action="PrijaviSe" asp-route-id="@Model.OglasId" class="custom-btn mt-3">
                 Prijavi se
             </a>
-
-            @if (isOwner)
+            @if (isAcceptedWorker && Model.Status == OglasStatus.Obavljen)
             {
-                <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="custom-btn mt-3">
-                    Pregled kandidata
-                </a>
+                if (!radnikDaoRecenziju)
+                {
+                    <a asp-controller="Recenzije"
+                       asp-action="Create"
+                       asp-route-oglasId="@Model.OglasId"
+                       asp-route-primaocId="@Model.UserId"
+                       asp-route-tip="@RecenzijaTip.ZaPoslodavca"
+                       class="custom-btn mt-3 me-2">Ocijenite poslodavca</a>
+                }
+                else
+                {
+                    <span class="text-success mt-3 d-block">Već ste ocijenili poslodavca za ovaj posao.</span>
+                }
             }
+
 @if (isOwner)
 {
-    <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="btn btn-info mt-3">Pregled kandidata</a>
+                <a asp-action="PregledKandidata" asp-route-id="@Model.OglasId" class="custom-btn mt-3">Pregled kandidata</a>
 
     @if (Model.Status == OglasStatus.InProces)
     {
@@ -78,7 +88,7 @@
                asp-route-oglasId="@Model.OglasId"
                asp-route-primaocId="@prihvaceniRadnik.UserId"
                asp-route-tip="@RecenzijaTip.ZaRadnika"
-               class="btn btn-primary mt-3">Ocijenite radnika</a>
+                           class="custom-btn mt-3">Ocijenite radnika</a>
         }
         else
         {
@@ -97,19 +107,3 @@
     <!-- Dodati dio za recenzije -->
     <h4 class="mt-5">Recenzije poslodavaca</h4>
 </div>
-@if (isAcceptedWorker && Model.Status == OglasStatus.Obavljen)
-{
-    if (!radnikDaoRecenziju)
-    {
-        <a asp-controller="Recenzije"
-           asp-action="Create"
-           asp-route-oglasId="@Model.OglasId"
-           asp-route-primaocId="@Model.UserId"
-           asp-route-tip="@RecenzijaTip.ZaPoslodavca"
-           class="btn btn-primary mt-3">Ocijenite poslodavca</a>
-    }
-    else
-    {
-        <span class="text-success mt-3 d-block">Već ste ocijenili poslodavca za ovaj posao.</span>
-    }
-}
