@@ -39,17 +39,37 @@ namespace hamalba.Controllers
                 .Where(ko => ko.UserId == korisnik.Id)
                 .Include(ko => ko.Oglas) // Uključujemo podatke o oglasima
                 .ToListAsync();
+           
+            var recenzijePoslodavac = await _context.Recenzije
+                .Where(r => r.PrimaocId == korisnik.Id && r.Tip == RecenzijaTip.ZaPoslodavca)
+                .Include(r => r.Autor)
+                .Include(r => r.Oglas)
+                .OrderByDescending(r => r.DatumKreiranja)
+                .ToListAsync();
+
+            var recenzijeRadnik = await _context.Recenzije
+                .Where(r => r.PrimaocId == korisnik.Id && r.Tip == RecenzijaTip.ZaRadnika)
+                .Include(r => r.Autor)
+                .Include(r => r.Oglas)
+                .OrderByDescending(r => r.DatumKreiranja)
+                .ToListAsync();
+
+
+            var prosjecnaOcjenaPoslodavac = recenzijePoslodavac.Any() ? recenzijePoslodavac.Average(r => r.Ocjena) : 0;
+            var prosjecnaOcjenaRadnik = recenzijeRadnik.Any() ? recenzijeRadnik.Average(r => r.Ocjena) : 0;
 
             var viewModel = new ProfilViewModel
             {
                 Korisnik = korisnik,
                 MojiOglasi = mojiOglasi,
-                PrijavljeniOglasi = prijavljeniOglasi // Ovdje šaljemo cijeli objekat KorisnikOglas
+                PrijavljeniOglasi = prijavljeniOglasi,
+                RecenzijePoslodavac = recenzijePoslodavac,
+                RecenzijeRadnik = recenzijeRadnik,
+                ProsjecnaOcjenaPoslodavac = prosjecnaOcjenaPoslodavac,
+                ProsjecnaOcjenaRadnik = prosjecnaOcjenaRadnik
             };
 
             return View(viewModel);
         }
-
-
     }
 }
