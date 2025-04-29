@@ -1,0 +1,222 @@
+﻿@model IEnumerable<hamalba.Models.Recenzija>
+
+@{
+    ViewData["Title"] = "Upravljanje recenzijama";
+}
+<head>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+</head>
+<h2>Upravljanje recenzijama</h2>
+
+<div class="mb-3">
+    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#createModal">➕ Nova recenzija</button>
+    <button class="btn btn-secondary ms-2" onclick="toggleArchived()">🗂 Prikaži/Sakrij arhivirane</button>
+</div>
+
+<!-- AKTIVNE RECENZIJE -->
+<h4>Aktivne</h4>
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Oglas</th>
+            <th>Autor</th>
+            <th>Primaoc</th>
+            <th>Ocjena</th>
+            <th>Tip</th>
+            <th>Komentar</th>
+            <th>Datum</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rec in Model.Where(r => !r.Arhivirana))
+        {
+            <tr>
+                <td>@rec.Oglas?.Naslov</td>
+                <td>@rec.Autor?.Ime @rec.Autor?.Prezime</td>
+                <td>@rec.Primaoc?.Ime @rec.Primaoc?.Prezime</td>
+                <td>@rec.Ocjena</td>
+                <td>@rec.Tip</td>
+                <td>@rec.Komentar</td>
+                <td>@rec.DatumKreiranja.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="openEditModal(@rec.RecenzijaId)">✏ Uredi</button>
+                    <form asp-action="Archive" asp-route-id="@rec.RecenzijaId" method="post" class="d-inline" onsubmit="return confirm('Arhivirati recenziju?');">
+                        <button type="submit" class="btn btn-sm btn-danger">🗄 Arhiviraj</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- ARHIVIRANE RECENZIJE -->
+<div id="archivedSection" style="display:none;">
+    <h4>Arhivirane</h4>
+    <table class="table table-bordered table-hover">
+        <thead class="table-secondary">
+            <tr>
+                <th>Oglas</th>
+                <th>Autor</th>
+                <th>Primaoc</th>
+                <th>Ocjena</th>
+                <th>Tip</th>
+                <th>Komentar</th>
+                <th>Datum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rec in Model.Where(r => r.Arhivirana))
+            {
+                <tr>
+                    <td>@rec.Oglas?.Naslov</td>
+                    <td>@rec.Autor?.Ime @rec.Autor?.Prezime</td>
+                    <td>@rec.Primaoc?.Ime @rec.Primaoc?.Prezime</td>
+                    <td>@rec.Ocjena</td>
+                    <td>@rec.Tip</td>
+                    <td>@rec.Komentar</td>
+                    <td>@rec.DatumKreiranja.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- CREATE MODAL -->
+<div class="modal fade" id="createModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="Create" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Nova recenzija</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="OglasSearch">Oglas</label>
+                        <input id="OglasSearch" class="form-control" placeholder="Naslov oglasa..." />
+                        <input type="hidden" name="OglasId" id="OglasId" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="AutorSearch">Autor</label>
+                        <input id="AutorSearch" class="form-control" placeholder="Ime autora..." />
+                        <input type="hidden" name="AutorId" id="AutorId" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="PrimaocSearch">Primaoc</label>
+                        <input id="PrimaocSearch" class="form-control" placeholder="Ime primaoca..." />
+                        <input type="hidden" name="PrimaocId" id="PrimaocId" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Ocjena</label>
+                        <input type="number" name="Ocjena" min="1" max="5" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Tip</label>
+                        <select name="Tip" class="form-select" required>
+                            <option value="0">ZaPoslodavca</option>
+                            <option value="1">ZaRadnika</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Komentar</label>
+                        <textarea name="Komentar" class="form-control" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                    <button type="submit" class="btn btn-primary">Spasi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- EDIT MODAL -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editForm" method="post">
+                <div class="modal-header">
+                    <h5 class="modal-title">Uredi recenziju</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="RecenzijaId" id="editId" />
+                    <div class="mb-3">
+                        <label>Ocjena</label>
+                        <input type="number" name="Ocjena" id="editOcjena" min="1" max="5" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Tip</label>
+                        <select name="Tip" id="editTip" class="form-select">
+                            <option value="0">ZaPoslodavca</option>
+                            <option value="1">ZaRadnika</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Komentar</label>
+                        <textarea name="Komentar" id="editKomentar" class="form-control" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Otkaži</button>
+                    <button type="submit" class="btn btn-primary">Spasi izmjene</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleArchived() {
+            const section = document.getElementById('archivedSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function openEditModal(id) {
+            fetch('/AdminRec/Get/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editId').value = data.recenzijaId;
+                    document.getElementById('editOcjena').value = data.ocjena;
+                    document.getElementById('editTip').value = data.tip;
+                    document.getElementById('editKomentar').value = data.komentar;
+                    document.getElementById('editForm').action = '/AdminRec/Edit/' + data.recenzijaId;
+                    new bootstrap.Modal(document.getElementById('editModal')).show();
+                });
+        }
+            <script>
+        $(function () {
+            $("#AutorSearch").autocomplete({
+                source: '/AdminRec/PretraziKorisnike',
+                minLength: 2,
+                select: function (event, ui) {
+                    $("#AutorId").val(ui.item.value);
+                }
+            });
+
+            $("#PrimaocSearch").autocomplete({
+                source: '/AdminRec/PretraziKorisnike',
+                minLength: 2,
+                select: function (event, ui) {
+                    $("#PrimaocId").val(ui.item.value);
+                }
+            });
+
+            $("#OglasSearch").autocomplete({
+                source: '/AdminRec/PretraziOglase',
+                minLength: 2,
+                select: function (event, ui) {
+                    $("#OglasId").val(ui.item.value);
+                }
+            });
+        });
+    </script>
+
+    </script>
+}

@@ -38,6 +38,9 @@ namespace hamalba.Models
         // Tip recenzije - razlikovanje između recenzije za poslodavca i radnika
         [Required]
         public RecenzijaTip Tip { get; set; }
+
+        [Required]
+        public bool Arhivirana { get; set; } = false;
     }
 
     
