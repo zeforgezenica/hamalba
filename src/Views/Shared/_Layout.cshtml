@@ -222,6 +222,9 @@
     </script>
     <!-- DIO ZA DODAVANJE U _Layout.cshtml -->
     <!-- 1. Floating dugme -->
+
+    <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow position-relative" style="width:60px; height:60px; z-index:1050;">
+
     <button id="openChatSearch" class="btn btn-primary position-fixed bottom-0 start-0 m-3 rounded-circle shadow position-relative" style="background-color:lightcoral; width:60px; height:60px; z-index:1050;">
         <i class="bi bi-chat-left-text-fill fs-4"></i>
         <span id="novaPorukaBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" style="font-size: 0.6rem; padding: 4px 6px;">
@@ -434,6 +437,23 @@
             input.focus();
         }
 
+
+        function posaljiPoruku() {
+               const sadrzaj = $('#chatInput').val();
+               if (!sadrzaj) return;
+
+               $.post('/Message/PosaljiPoruku', { primalacId: trenutniPrimalacId, sadrzaj }, function () {
+                   $('#chatInput').val('');
+                   ucitajPoruke();
+               });
+           }
+
+           $('#chatInput').on('keydown', function (e) {
+               if (e.key === 'Enter' && !e.shiftKey) {
+                   e.preventDefault(); // spriječi novi red
+                   posaljiPoruku();
+               }
+           });
                 let prvoUpozorenjeDano = false;
         const zabranjeneRijeci = [
                    "jebem", "mater", "kurac", "pička", "nigger", "retard", "idiot", "govno", "fuck", "shit", "asshole",

@@ -1,4 +1,5 @@
 ﻿// Controllers/OglasiController.cs
+using hamalba.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 using hamalba.ViewModels;
+
 namespace hamalba.Controllers
 { 
     public class OglasiController : Controller
@@ -18,6 +20,15 @@ namespace hamalba.Controllers
         private readonly ILogger<OglasiController> _logger;
         private readonly UserManager<Korisnik> _userManager;
 
+        [HttpGet]
+        public IActionResult GetGradovi(string query)
+        {
+            var gradovi = Gradovi.SviGradovi
+                .Where(g => g.StartsWith(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            return Json(gradovi);
+        }
         public OglasiController(ApplicationDbContext context, ILogger<OglasiController> logger, UserManager<Korisnik> userManager)
         {
             _context = context;
@@ -28,7 +39,7 @@ namespace hamalba.Controllers
         [HttpGet]
         public IActionResult CreateOglas()
         {
-            return View(new OglasViewModel());
+            return View(new OglasModel());
         }
 
         //Prikaz svih oglasa koji su objavljeni
@@ -257,6 +268,7 @@ namespace hamalba.Controllers
             }
         }
 
+
         //Pregled prijavljenih kandidata
         [HttpGet]
         public async Task<IActionResult> PregledKandidata(int id)
@@ -377,7 +389,7 @@ namespace hamalba.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateOglas(OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
+        public async Task<IActionResult> CreateOglas(hamalba.Models.OglasViewModel viewModel, bool? PublishNow, bool? PublishLater)
         {
             _logger.LogInformation("CreateOglas POST started");
 

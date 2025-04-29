@@ -57,9 +57,16 @@
 
                 <div class="mb-3">
                     <label asp-for="Lokacija" class="form-label"></label>
-                    <input asp-for="Lokacija" class="form-control" />
+                    <input list="lokacijeLista" asp-for="Lokacija" class="form-control" />
+                    <datalist id="lokacijeLista">
+                        @foreach (var grad in ViewBag.Gradovi as List<string>)
+                        {
+                            <option value="@grad"></option>
+                        }
+                    </datalist>
                     <span asp-validation-for="Lokacija" class="text-danger"></span>
                 </div>
+
 
                 <div class="mb-3">
                     <label asp-for="Kontakt" class="form-label"></label>
@@ -132,5 +139,48 @@
                 publishLaterBtn.style.display = 'inline-block';
             }
         });
+
+
+        //autocomplete gradova
+        document.addEventListener('DOMContentLoaded', function () {
+            const gradInput = document.getElementById('gradInput');
+            const suggestionsBox = document.getElementById('gradSuggestions');
+
+            gradInput.addEventListener('input', function () {
+                const query = gradInput.value;
+
+                if (query.length < 2) {
+                    suggestionsBox.innerHTML = '';
+                    return;
+                }
+
+                fetch(`/Oglasi/GetGradovi?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsBox.innerHTML = '';
+                        data.forEach(grad => {
+                            const item = document.createElement('a');
+                            item.classList.add('list-group-item', 'list-group-item-action');
+                            item.textContent = grad;
+                            item.href = '#';
+                            item.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                gradInput.value = grad;
+                                suggestionsBox.innerHTML = '';
+                            });
+                            suggestionsBox.appendChild(item);
+                        });
+                    });
+            });
+
+            // Klik van sugestija
+            document.addEventListener('click', function (e) {
+                if (!suggestionsBox.contains(e.target) && e.target !== gradInput) {
+                    suggestionsBox.innerHTML = '';
+                }
+            });
+        });
+
+
     </script>
 }
