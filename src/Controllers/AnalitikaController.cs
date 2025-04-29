@@ -1,6 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using hamalba.DataBase;
 using Microsoft.EntityFrameworkCore;
+using hamalba.Models;
+
+public class TopRadnikDTO
+{
+    public string ImePrezime { get; set; }
+    public double ProsjecnaOcjena { get; set; }
+    public int BrojRecenzija { get; set; }
+}
+
+public class TopPoslodavacDTO
+{
+    public string ImePrezime { get; set; }
+    public double ProsjecnaOcjena { get; set; }
+    public int BrojRecenzija { get; set; }
+}
 
 public class AnalitikaController : Controller
 {
@@ -21,7 +36,6 @@ public class AnalitikaController : Controller
             .OrderByDescending(g => g.Count)
             .Take(5)
             .ToListAsync();
-
         var gradoviDict = topGradoviList.ToDictionary(g => g.Lokacija, g => g.Count);
 
         var korisniciOglasi = await _context.Oglasi
@@ -30,7 +44,6 @@ public class AnalitikaController : Controller
             .OrderByDescending(x => x.Count)
             .Take(10)
             .ToListAsync();
-
         var korisniciDict = korisniciOglasi
             .Join(_context.Users,
                 ko => ko.UserId,
@@ -39,14 +52,13 @@ public class AnalitikaController : Controller
             .ToDictionary(x => x.Ime, x => x.Count);
 
         var rawMonthlyAds = await _context.Oglasi
-    .GroupBy(o => new { o.Datum.Year, o.Datum.Month })
-    .Select(g => new {
-        Year = g.Key.Year,
-        Month = g.Key.Month,
-        Count = g.Count()
-    })
-    .ToListAsync();
-
+            .GroupBy(o => new { o.Datum.Year, o.Datum.Month })
+            .Select(g => new {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Count = g.Count()
+            })
+            .ToListAsync();
         var monthlyAdsDict = rawMonthlyAds
             .OrderBy(x => new DateTime(x.Year, x.Month, 1))
             .ToDictionary(
@@ -54,25 +66,69 @@ public class AnalitikaController : Controller
                 x => x.Count
             );
 
-        var topCijeneDict = await _context.Oglasi
-    .OrderByDescending(o => o.Cijena)
-    .Take(10)
-    .Select(o => new { o.Naslov, o.Cijena })
-    .ToDictionaryAsync(x => x.Naslov, x => x.Cijena);
-
         var statusi = await _context.Oglasi
-    .GroupBy(o => o.Status)
-    .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
-    .ToDictionaryAsync(x => x.Status, x => x.Count);
+            .GroupBy(o => o.Status)
+            .Select(g => new { Status = g.Key.ToString(), Count = g.Count() })
+            .ToDictionaryAsync(x => x.Status, x => x.Count);
 
-        ViewData["StatusiOglasa"] = statusi;
-        ViewData["TopCijene"] = topCijeneDict;
+        var topRadniciList = await _context.Recenzije
+    .Where(r => r.Tip == RecenzijaTip.ZaRadnika)
+    .GroupBy(r => r.PrimaocId)
+    .Select(g => new
+    {
+        KorisnikId = g.Key,
+        ProsjecnaOcjena = g.Average(r => r.Ocjena),
+        BrojRecenzija = g.Count()
+    })
+    .Where(x => x.BrojRecenzija >= 1)
+    .OrderByDescending(x => x.ProsjecnaOcjena)
+    .ThenByDescending(x => x.BrojRecenzija)
+    .Take(10)
+    .Join(_context.Users,
+        rec => rec.KorisnikId,
+        user => user.Id,
+        (rec, user) => new TopRadnikDTO
+        {
+            ImePrezime = user.Ime + " " + user.Prezime,
+            ProsjecnaOcjena = rec.ProsjecnaOcjena,
+            BrojRecenzija = rec.BrojRecenzija
+        })
+    .ToListAsync();
+
+        var topPoslodavciList = await _context.Recenzije
+            .Where(r => r.Tip == RecenzijaTip.ZaPoslodavca)
+            .GroupBy(r => r.PrimaocId)
+            .Select(g => new
+            {
+                KorisnikId = g.Key,
+                ProsjecnaOcjena = g.Average(r => r.Ocjena),
+                BrojRecenzija = g.Count()
+            })
+            .Where(x => x.BrojRecenzija >= 1)
+            .OrderByDescending(x => x.ProsjecnaOcjena)
+            .ThenByDescending(x => x.BrojRecenzija)
+            .Take(10)
+            .Join(_context.Users,
+                rec => rec.KorisnikId,
+                user => user.Id,
+                (rec, user) => new TopPoslodavacDTO
+                {
+                    ImePrezime = user.Ime + " " + user.Prezime,
+                    ProsjecnaOcjena = rec.ProsjecnaOcjena,
+                    BrojRecenzija = rec.BrojRecenzija
+                })
+            .ToListAsync();
+
         ViewData["UkupnoOglasa"] = ukupnoOglasa;
         ViewData["TopGradovi"] = gradoviDict;
         ViewData["TopKorisnici"] = korisniciDict;
         ViewData["MonthlyAds"] = monthlyAdsDict;
+        ViewData["StatusiOglasa"] = statusi;
+        ViewData["TopRadnici"] = topRadniciList;
+        ViewData["TopPoslodavci"] = topPoslodavciList;
 
         return View();
     }
+
 
 }
