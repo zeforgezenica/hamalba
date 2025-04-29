@@ -19,13 +19,13 @@ jobs:
         dotnet-version: 9.0.x
     - name: Restore dependencies
       run: |
-        cd hamalba/src
+        cd src
         dotnet restore
     - name: Build
       run: |
-        cd hamalba/src
+        cd src
         dotnet build --no-restore
     - name: Test
       run: |
-        cd hamalba/src
+        cd src
         dotnet test --no-build --verbosity normal
