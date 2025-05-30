@@ -1,0 +1,153 @@
+﻿@model hamalba.Models.Report
+@{
+    ViewData["Title"] = "Detalji prijave";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-file-earmark-text me-2"></i>Detalji prijave #@Model.ReportId</h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Povratak na listu
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Informacije o prijavi</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p><strong>Datum prijave:</strong> @Model.DatumPrijave.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</p>
+                            <p>
+                                <strong>Status:</strong>
+                                @switch (Model.Status)
+                                {
+                                    case 0:
+                                        <span class="badge bg-secondary">Na čekanju</span>
+                                        break;
+                                    case 1:
+                                        <span class="badge bg-success">Prihvaćena</span>
+                                        break;
+                                    case 2:
+                                        <span class="badge bg-danger">Odbijena</span>
+                                        break;
+                                }
+                            </p>
+                            <p>
+                                <strong>Pregledano:</strong>
+                                @if (Model.Pregledano)
+                                {
+                                    <span class="text-success">Da (@Model.DatumPregleda?.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))</span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Ne</span>
+                                }
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Prijavio:</strong> @Model.Reporter.Ime @Model.Reporter.Prezime (@Model.Reporter.Email)</p>
+                            <p><strong>Prijavljeni:</strong> @Model.ReportedUser.Ime @Model.ReportedUser.Prezime (@Model.ReportedUser.Email)</p>
+                            @if (Model.RelatedOglas != null)
+                            {
+                                <p>
+                                    <strong>Vezani oglas:</strong>
+                                    <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@Model.RelatedOglas.OglasId">
+                                        @Model.RelatedOglas.Naslov
+                                    </a>
+                                </p>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="mb-2">Razlog prijave:</h6>
+                        <div class="p-3 bg-light rounded">
+                            @Model.Razlog
+                        </div>
+                    </div>
+
+                    @if (Model.Pregledano && !string.IsNullOrEmpty(Model.KomentarAdmina))
+                    {
+                        <div class="mb-3">
+                            <h6 class="mb-2">Komentar administratora:</h6>
+                            <div class="p-3 bg-light rounded">
+                                @Model.KomentarAdmina
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            @if (!Model.Pregledano)
+            {
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Obrada prijave</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="ProcessReport" method="post">
+                            <input type="hidden" name="ReportId" value="@Model.ReportId" />
+
+                            <div class="mb-3">
+                                <label class="form-label">Status prijave:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Status" id="status1" value="1" checked>
+                                    <label class="form-check-label" for="status1">Prihvati prijavu</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="Status" id="status2" value="2">
+                                    <label class="form-check-label" for="status2">Odbij prijavu</label>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="KomentarAdmina" class="form-label">Komentar:</label>
+                                <textarea class="form-control" id="KomentarAdmina" name="KomentarAdmina" rows="4"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check2-circle me-1"></i> Obradi prijavu
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Brze akcije</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-person-fill-gear me-1"></i> Upravljaj korisnicima
+                        </a>
+
+                        @if (Model.RelatedOglas != null)
+                        {
+                            <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@Model.RelatedOglas.OglasId" class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-1"></i> Pregledaj oglas
+                            </a>
+                        }
+
+                        <button type="button" class="btn btn-outline-danger" disabled>
+                            <i class="bi bi-x-circle me-1"></i> Banuj prijavljenog korisnika
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -13,13 +13,14 @@ namespace hamalba.DataBase
         public DbSet<Oglas> Oglasi { get; set; }
         public DbSet<KorisnikOglas> KorisnikOglasi { get; set; }
         public DbSet<Kontakt> Kontakt { get; set; }
-         public DbSet<Poruka> Poruke { get; set; }
+        public DbSet<Poruka> Poruke { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Korisnik> Korisnici { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Additional configuration for the Oglas entity
             builder.Entity<Oglas>(entity =>
             {
                 entity.ToTable("Oglasi");
@@ -35,10 +36,20 @@ namespace hamalba.DataBase
                       .WithMany()
                       .HasForeignKey(e => e.UserId);
             });
+
+
+            builder.Entity<Report>(entity =>
+            {
+                entity.HasOne(r => r.Reporter)
+                      .WithMany()
+                      .HasForeignKey(r => r.ReporterUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(r => r.ReportedUser)
+                      .WithMany()
+                      .HasForeignKey(r => r.ReportedUserId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
         }
-    
-
-        public DbSet<Korisnik> Korisnici { get; set; } 
     }
-
 }

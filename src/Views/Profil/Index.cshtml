@@ -23,6 +23,13 @@
                     <p class="text-danger"><strong>Banovan do:</strong> @korisnik.BanTrajanje.Value.ToLocalTime().ToString("dd.MM.yyyy")</p>
                     <p class="text-danger"><strong>Razlog:</strong> @korisnik.BanRazlog</p>
                 }
+
+                @if (User.Identity.IsAuthenticated && Model.Korisnik.Id != User.Identity.Name)
+                {
+                    <a asp-controller="Report" asp-action="ReportUser" asp-route-userId="@Model.Korisnik.Id" class="btn btn-warning mt-2">
+                        <i class="bi bi-flag-fill"></i> Prijavi korisnika
+                    </a>
+                }
             </div>
         </div>
         <div class="profil-accordion">
@@ -54,8 +61,8 @@
                                             <td>@oglas.Lokacija</td>
                                             <td>@oglas.Cijena.ToString("F2") KM</td>
                                             <td>
-                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">                                          
-                                                       @oglas.Status
+                                                <span class="badge @(oglas.Status == 0 ? "bg-success" : "bg-secondary")">
+                                                    @oglas.Status
                                                 </span>
                                             </td>
                                             <td>@oglas.DatumObjave.ToLocalTime().ToString("dd.MM.yyyy")</td>
@@ -69,6 +76,9 @@
                                                 <button class="btn btn-primary btn-sm mb-1" disabled>
                                                     <i class="bi bi-pencil"></i> Uredi
                                                 </button>
+                                                <a asp-controller="Report" asp-action="ReportUser" asp-route-userId="@oglas.UserId" asp-route-oglasId="@oglas.OglasId" class="btn btn-warning btn-sm mb-1">
+                                                    <i class="bi bi-flag"></i> Prijavi
+                                                </a>
                                             </td>
                                         </tr>
                                     }
@@ -128,6 +138,9 @@
                                                 <a asp-controller="Oglasi" asp-action="Detalji" asp-route-id="@korisnikOglas.Oglas.OglasId" class="btn btn-secondary btn-sm me-2 mb-1">
                                                     <i class="bi bi-eye"></i> Pregled
                                                 </a>
+                                                <a asp-controller="Report" asp-action="ReportUser" asp-route-userId="@korisnikOglas.Oglas.UserId" asp-route-oglasId="@korisnikOglas.Oglas.OglasId" class="btn btn-warning btn-sm mb-1">
+                                                    <i class="bi bi-flag"></i> Prijavi
+                                                </a>
                                             </td>
                                         </tr>
                                     }
@@ -141,7 +154,6 @@
                     }
                 </div>
             </div>
-
 
             <div class="profil-accordion-item">
                 <div class="profil-accordion-header" onclick="toggleAccordion(this)">

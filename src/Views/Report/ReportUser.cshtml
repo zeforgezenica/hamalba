@@ -1,0 +1,61 @@
+﻿@model hamalba.ViewModels.ReportViewModel
+@{
+    ViewData["Title"] = "Prijavi korisnika";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4><i class="bi bi-exclamation-triangle-fill me-2"></i>Prijavi korisnika</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    <p>Prijavljujete korisnika: <strong>@Model.ReportedUserName</strong></p>
+
+                    @if (Model.OglasId.HasValue && !string.IsNullOrEmpty(Model.OglasNaslov))
+                    {
+                        <p>U vezi oglasa: <strong>@Model.OglasNaslov</strong></p>
+                    }
+
+                    <form asp-action="ReportUser" method="post">
+                        <input type="hidden" asp-for="ReportedUserId" />
+                        <input type="hidden" asp-for="OglasId" />
+
+                        <div class="mb-3">
+                            <label asp-for="Razlog" class="form-label">Razlog prijave:</label>
+                            <textarea asp-for="Razlog" class="form-control" rows="5" required
+                                      placeholder="Opišite detaljno razlog zašto prijavljujete ovog korisnika..."></textarea>
+                            <span asp-validation-for="Razlog" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle-fill me-2"></i> Vaša prijava će biti pregledana od strane administratora.
+                            Molimo vas da navedete što više detalja kako bismo mogli pravilno postupiti.
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="javascript:history.back()" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i> Nazad
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-send-fill me-1"></i> Pošalji prijavu
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

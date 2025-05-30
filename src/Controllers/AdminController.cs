@@ -104,7 +104,7 @@ namespace hamalba.Controllers
         public async Task<IActionResult> Index(string search)
         {
             var korisnici = _context.Korisnici.AsQueryable();
-
+            ViewBag.UnreviewedReportCount = await ReportController.GetUnreviewedReportCount(_context);
             if (!string.IsNullOrEmpty(search))
             {
                 korisnici = korisnici.Where(k =>

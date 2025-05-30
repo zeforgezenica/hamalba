@@ -390,6 +390,57 @@ namespace hamalba.Migrations
                     b.ToTable("Poruke");
                 });
 
+            modelBuilder.Entity("hamalba.Models.Report", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<DateTime?>("DatumPregleda")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("DatumPrijave")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("KomentarAdmina")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int?>("OglasId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Pregledano")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Razlog")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ReportedUserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("ReporterUserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReportId");
+
+                    b.HasIndex("OglasId");
+
+                    b.HasIndex("ReportedUserId");
+
+                    b.HasIndex("ReporterUserId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -488,6 +539,31 @@ namespace hamalba.Migrations
                     b.Navigation("Posiljalac");
 
                     b.Navigation("Primalac");
+                });
+
+            modelBuilder.Entity("hamalba.Models.Report", b =>
+                {
+                    b.HasOne("hamalba.Models.Oglas", "RelatedOglas")
+                        .WithMany()
+                        .HasForeignKey("OglasId");
+
+                    b.HasOne("hamalba.Models.Korisnik", "ReportedUser")
+                        .WithMany()
+                        .HasForeignKey("ReportedUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("hamalba.Models.Korisnik", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("RelatedOglas");
+
+                    b.Navigation("ReportedUser");
+
+                    b.Navigation("Reporter");
                 });
 #pragma warning restore 612, 618
         }
